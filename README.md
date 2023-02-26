@@ -18,7 +18,11 @@ by providing:
 
 ## Usage
 
-To use this framework, you should add it as a git submodule to your repository.
+To use this framework, you should add it as a git submodule to your repository:
+
+    $ git submodule add https://github.com/seeraven/make4py .make4py
+    $ git commit -m "feature: Added make4py submodule."
+    
 
 
 [pyInstaller]: https://pyinstaller.org/en/stable/
