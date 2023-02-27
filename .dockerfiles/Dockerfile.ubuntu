@@ -1,0 +1,36 @@
+#
+# Dockerfile to generate make4py docker container based on Ubuntu docker images.
+#
+# Call with:
+#   docker build --build-arg UBUNTU_VERSION=20.04 \
+#                --build-arg TGT_UID=$(id -u) \
+#                --build-arg TGT_GID=$(id -g) \
+#                --file .dockerfiles/Dockerfile.ubuntu \
+#                --rm --tag make4py:ubuntu20.04 .dockerfiles
+#
+
+ARG UBUNTU_VERSION
+FROM ubuntu:$UBUNTU_VERSION
+
+RUN echo -e 'tzdata tzdata/Areas select Europe\n\
+tzdata tzdata/Zones/Europe select Berlin\n' > /tmp/tzdata_preseed
+RUN debconf-set-selections /tmp/tzdata_preseed && rm -f /tmp/tzdata_preseed
+
+RUN DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
+    apt-get update
+RUN DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
+    apt-get -y dist-upgrade
+
+RUN DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
+    apt-get -y install lsb-release make binutils
+
+RUN ln -sf bash /bin/sh
+
+COPY ubuntu_install_python.sh /tmp/ubuntu_install_python.sh
+RUN /tmp/ubuntu_install_python.sh && rm -f /tmp/ubuntu_install_python.sh
+
+ARG TGT_GID
+ARG TGT_UID
+
+RUN groupadd --gid $TGT_GID dockeruser
+RUN useradd --gid $TGT_GID --uid $TGT_UID --shell /bin/bash --create-home dockeruser
