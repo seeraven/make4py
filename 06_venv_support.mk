@@ -9,6 +9,31 @@
 # ----------------------------------------------------------------------------
 
 
+# ----------------------------------------------------------------------------
+#  SETTINGS
+# ----------------------------------------------------------------------------
+
+ifeq ($(ON_WINDOWS),1)
+    VENV_DIR := venv_$(WIN_PLATFORM_STRING)
+    VENV_ACTIVATE := $(VENV_DIR)\Scripts\activate.bat
+    VENV_ACTIVATE_PLUS := $(VENV_ACTIVATE) &
+    VENV_SHELL := cmd.exe /K $(VENV_ACTIVATE)
+else
+    ifeq (, $(shell which lsb_release))
+        VENV_DIR := venv
+    else
+        VENV_DIR := venv_$(shell lsb_release -i -s)$(shell lsb_release -r -s)
+    endif
+    VENV_ACTIVATE := source $(VENV_DIR)/bin/activate
+    VENV_ACTIVATE_PLUS := $(VENV_ACTIVATE);
+    VENV_SHELL := $(VENV_ACTIVATE_PLUS) /bin/bash
+endif
+
+
+# ----------------------------------------------------------------------------
+#  TARGETS
+# ----------------------------------------------------------------------------
+
 .PHONY: venv venv-bash
 
 $(VENV_DIR):

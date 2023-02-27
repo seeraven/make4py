@@ -12,15 +12,17 @@
 # ----------------------------------------------------------------------------
 #  DEFAULT SETTINGS
 # ----------------------------------------------------------------------------
+MAKE4PY_DIR            := $(dir $(lastword $(MAKEFILE_LIST)))
+MAKE4PY_DIR_ABS        := $(abspath $(MAKE4PY_DIR))
+
 UBUNTU_DIST_VERSIONS   := $(or $(UBUNTU_DIST_VERSIONS),18.04 20.04 22.04)
+PYCODESTYLE_CONFIG     := $(or $(PYCODESTYLE_CONFIG),$(MAKE4PY_DIR)/.pycodestyle)
+SRC_DIRS               := $(or $(SRC_DIRS),$(wildcard src/. test/.))
 
 
 # ----------------------------------------------------------------------------
 #  INCLUDE MODULES
 # ----------------------------------------------------------------------------
-MAKE4PY_DIR         := $(dir $(lastword $(MAKEFILE_LIST)))
-MAKE4PY_DIR_ABS     := $(abspath $(MAKE4PY_DIR))
-
 include $(MAKE4PY_DIR)01_check_settings.mk
 include $(MAKE4PY_DIR)02_platform_support.mk
 include $(MAKE4PY_DIR)03_ensure_python_version.mk
@@ -29,6 +31,9 @@ include $(MAKE4PY_DIR)05_system_setup.mk
 include $(MAKE4PY_DIR)06_venv_support.mk
 include $(MAKE4PY_DIR)07_multi_platform_docker.mk
 include $(MAKE4PY_DIR)08_multi_platform_vagrant.mk
+include $(MAKE4PY_DIR)09_check_style.mk
+include $(MAKE4PY_DIR)10_unittests.mk
+include $(MAKE4PY_DIR)12_documentation.mk
 
 
 # ----------------------------------------------------------------------------
@@ -44,12 +49,6 @@ rwildcard = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(
 # ----------------------------------------------------------------------------
 
 UBUNTU_RELEASE_TARGETS := $(addprefix releases/$(APP_NAME)_v$(APP_VERSION)_Ubuntu,$(addsuffix _amd64,$(UBUNTU_DIST_VERSIONS)))
-UBUNTU_PIPDEPS_TARGETS := $(addprefix pip-deps-upgrade-Ubuntu,$(addsuffix _amd64,$(UBUNTU_DIST_VERSIONS)))
-
-
-# TODO: These are most likely not needed if we focus on pyproject.toml
-# PYLINT_RCFILE       := $(or $(PYLINT_RCFILE),$(MAKE4PY_DIR)/.pylintrc)
-# PYCODESTYLE_CONFIG  := $(or $(PYCODESTYLE_CONFIG),$(MAKE4PY_DIR)/.pycodestyle)
 
 
 # ----------------------------------------------------------------------------
@@ -105,11 +104,14 @@ ifeq ($(ON_WINDOWS),0)
 	@echo ""
 endif
 	@echo "Targets for Style Checking:"
-	@echo " check-style.venv          : Call pylint, pycodestyle and flake8"
+	@echo " check-style.venv          : Call pylint, pycodestyle, flake8 and mypy."
 	@echo " pylint.venv               : Call pylint on the source files."
 	@echo " pycodestyle.venv          : Call pycodestyle on the source files."
 	@echo " flake8.venv               : Call flake8 on the source files."
 	@echo " mypy.venv                 : Call mypy on the source files."
+	@echo ""
+	@echo "Targets for Testing:"
+	@echo " unittests.venv            : Execute the unittests."
 	@echo ""
 	@echo "Development Information:"
 	@echo " PWD                = $(PWD)"
@@ -126,6 +128,22 @@ endif
 ipython:
 	@$(VENV_ACTIVATE_PLUS) \
 	ipython
+
+
+# ----------------------------------------------------------------------------
+#  MAINTENANCE TARGETS
+# ----------------------------------------------------------------------------
+
+distclean: clean
+	@$(call RMDIRR,releases)
+	@$(call RMDIRR,.mypy_cache)
+
+clean:
+	@$(call RMDIR,$(VENV_DIR) dist build doc/build doc/*coverage doc/source/apidoc)
+	@$(call RMFILE,.coverage .coverage-* *.spec)
+	@$(call RMDIRR,__pycache__)
+	@$(call RMFILER,*~)
+	@$(call RMFILER,*.pyc)
 
 
 # ----------------------------------------------------------------------------

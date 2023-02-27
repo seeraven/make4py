@@ -27,10 +27,6 @@ ifeq ($(ON_WINDOWS),1)
     PWD    := $(CURDIR)
     PYTHON := python
     WIN_PLATFORM_STRING := $(shell python -c "import platform;print(f'win{platform.release()}_{platform.architecture()[0]}',end='')")
-    VENV_DIR := venv_$(WIN_PLATFORM_STRING)
-    VENV_ACTIVATE := $(VENV_DIR)\Scripts\activate.bat
-    VENV_ACTIVATE_PLUS := $(VENV_ACTIVATE) &
-    VENV_SHELL := cmd.exe /K $(VENV_ACTIVATE)
     SET_PYTHONPATH := set PYTHONPATH=$(PYTHONPATH) &
     FIX_PATH = $(subst /,\\,$1)
     RMDIR    = rmdir /S /Q $(call FIX_PATH,$1) 2>nul || ver >nul
@@ -42,14 +38,6 @@ ifeq ($(ON_WINDOWS),1)
 else
     SHELL   = /bin/bash
     PYTHON := python3
-    ifeq (, $(shell which lsb_release))
-        VENV_DIR := venv
-    else
-        VENV_DIR := venv_$(shell lsb_release -i -s)$(shell lsb_release -r -s)
-    endif
-    VENV_ACTIVATE := source $(VENV_DIR)/bin/activate
-    VENV_ACTIVATE_PLUS := $(VENV_ACTIVATE);
-    VENV_SHELL := $(VENV_ACTIVATE_PLUS) /bin/bash
     SET_PYTHONPATH := PYTHONPATH=$(PYTHONPATH)
     RMDIR    = rm -rf $1
     RMDIRR   = find . -name "$1" -exec rm -rf {} \; 2>/dev/null || true
