@@ -34,7 +34,7 @@ endif
 #  TARGETS
 # ----------------------------------------------------------------------------
 
-.PHONY: venv venv-bash
+.PHONY: venv venv-bash ipython
 
 $(VENV_DIR):
 	@$(PYTHON) -m venv $(VENV_DIR)
@@ -52,6 +52,9 @@ venv-bash: venv
 	@$(VENV_SHELL)
 	@echo "Leaving sandbox shell."
 
+ipython:
+	@$(VENV_ACTIVATE_PLUS) \
+	ipython
 
 %.venv: venv
 	$(VENV_ACTIVATE_PLUS) make $*

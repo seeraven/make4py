@@ -9,30 +9,35 @@
 # ----------------------------------------------------------------------------
 
 
-.PHONY: print_appname print_version
+.PHONY: format black isort \
+	format-check black-check isort-check \
+	format-diff black-diff isort-diff
 
-print_appname:
-	@echo $(APP_NAME)
+format: black isort
 
-print_version:
-	@echo $(APP_VERSION)
+format-check: black-check isort-check
+
+format-diff: black-diff isort-diff
 
 
-ifneq ($(DOC_SUPPORT),)
+black:
+	@black $(SRC_DIRS)
 
-.PHONY: apidoc doc man
+black-check:
+	@black --check $(SRC_DIRS)
 
-apidoc:
-	@$(call RMDIR,doc/source/apidoc)
-	@$(SET_PYTHONPATH) sphinx-apidoc -f -M -T -o doc/source/apidoc $(DOC_MODULES)
+black-diff:
+	@black --diff $(SRC_DIRS)
 
-doc: apidoc
-	@$(SET_PYTHONPATH) sphinx-build -W -b html doc/source doc/build
 
-man:
-	@$(SET_PYTHONPATH) sphinx-build -W -b man doc/manpage doc/build
+isort:
+	@isort $(SRC_DIRS)
 
-endif
+isort-check:
+	@isort --check $(SRC_DIRS)
+
+isort-diff:
+	@isort --diff $(SRC_DIRS)
 
 
 # ----------------------------------------------------------------------------

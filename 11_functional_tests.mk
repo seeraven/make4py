@@ -9,32 +9,6 @@
 # ----------------------------------------------------------------------------
 
 
-.PHONY: print_appname print_version
-
-print_appname:
-	@echo $(APP_NAME)
-
-print_version:
-	@echo $(APP_VERSION)
-
-
-ifneq ($(DOC_SUPPORT),)
-
-.PHONY: apidoc doc man
-
-apidoc:
-	@$(call RMDIR,doc/source/apidoc)
-	@$(SET_PYTHONPATH) sphinx-apidoc -f -M -T -o doc/source/apidoc $(DOC_MODULES)
-
-doc: apidoc
-	@$(SET_PYTHONPATH) sphinx-build -W -b html doc/source doc/build
-
-man:
-	@$(SET_PYTHONPATH) sphinx-build -W -b man doc/manpage doc/build
-
-endif
-
-
 # ----------------------------------------------------------------------------
 #  EOF
 # ----------------------------------------------------------------------------
