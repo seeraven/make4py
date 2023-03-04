@@ -9,6 +9,38 @@
 # ----------------------------------------------------------------------------
 
 
+ifneq ($(FUNCTEST_DIR),)
+
+.PHONY: functional-tests functional-tests-coverage
+
+functional-tests:
+	@pytest $(FUNCTEST_DIR)
+
+functional-tests-coverage:
+	@$(call RMFILE,.coverage.functests)
+	@$(call RMDIR,doc/functional-tests-coverage)
+	@COVERAGE_FILE=.coverage.functests \
+	pytest --cov --cov-report=term --cov-report=html:doc/functional-tests-coverage $(FUNCTEST_DIR)
+
+endif
+
+
+ifneq ($(FUNCTEST_DIR),)
+ifneq ($(UNITTEST_DIR),)
+.PHONY: tests tests-coverage
+
+tests: unittests functional-tests
+
+tests-coverage: unittests-coverage functional-tests-coverage
+	@coverage combine
+	@coverage report
+	@$(call RMDIR,doc/tests-coverage)
+	@coverage html -d doc/tests-coverage
+
+endif
+endif
+
+
 # ----------------------------------------------------------------------------
 #  EOF
 # ----------------------------------------------------------------------------

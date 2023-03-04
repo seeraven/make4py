@@ -9,10 +9,20 @@
 # ----------------------------------------------------------------------------
 
 
-.PHONY: unittests
+ifneq ($(UNITTEST_DIR),)
+
+.PHONY: unittests unittests-coverage
 
 unittests:
-	@pytest test/unittests
+	@pytest $(UNITTEST_DIR)
+
+unittests-coverage:
+	@$(call RMFILE,.coverage.unittests)
+	@$(call RMDIR,doc/unittests-coverage)
+	@COVERAGE_FILE=.coverage.unittests \
+	pytest --cov --cov-report=term --cov-report=html:doc/unittests-coverage $(UNITTEST_DIR)
+
+endif
 
 
 # ----------------------------------------------------------------------------

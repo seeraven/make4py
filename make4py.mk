@@ -21,6 +21,9 @@ PYCODESTYLE_CONFIG     := $(or $(PYCODESTYLE_CONFIG),$(MAKE4PY_DIR)/.pycodestyle
 SRC_DIRS               := $(or $(SRC_DIRS),$(wildcard src/. test/.))
 DOC_SUPPORT            := $(wildcard doc/*/conf.py)
 DOC_MODULES            := $(or $(DOC_MODULES),$(dir $(wildcard src/*/__init__.py)))
+UNITTEST_DIR           := $(or $(UNITTEST_DIR),$(wildcard test/unittests/.))
+FUNCTEST_DIR           := $(or $(FUNCTEST_DIR),$(wildcard test/functional_tests/.))
+TEST_SUPPORT           := $(or $(UNITTEST_DIR),$(FUNCTEST_DIR))
 
 
 # ----------------------------------------------------------------------------
@@ -50,10 +53,6 @@ include $(MAKE4PY_DIR)13_format.mk
 include $(MAKE4PY_DIR)14_distribution.mk
 
 # TODO:
-# - unittest code coverage
-# - functional tests
-# - functional tests code coverage
-# - combined code coverage
 # - pyinstaller call
 
 
@@ -103,7 +102,21 @@ help:
 	@echo "                             supported environments."
 	@echo " format.venv               : Call black and isort on the source files."
 	@echo " check-style.venv          : Call pylint, pycodestyle, flake8 and mypy."
+ifneq ($(UNITTEST_DIR),)
+  ifneq ($(FUNCTEST_DIR),)
+	@echo " tests.venv                : Execute the unittests and functional tests."
+	@echo " tests-coverage.venv       : Execute the unittests and functional tests"
+	@echo "                             and collect the code coverage."
+  else
 	@echo " unittests.venv            : Execute the unittests."
+	@echo " unittests-coverage.venv   : Execute the unittests and collect the code coverage."
+  endif
+else
+  ifneq ($(FUNCTEST_DIR),)
+	@echo " functional-tests.venv          : Execute the functional tests."
+	@echo " functional-tests-coverage.venv : Execute the functional tests and collect the code coverage."
+  endif
+endif
 ifneq ($(DOC_SUPPORT),)
 	@echo " doc.venv                  : Generate the documentation."
 	@echo " man.venv                  : Generate the man page."
@@ -182,9 +195,23 @@ endif
 	@echo " isort-diff.venv           : Call isort to check the formatting of the source files"
 	@echo "                             and print the differences."
 	@echo ""
+ifneq ($(TEST_SUPPORT),)
 	@echo "Targets for Testing:"
+ifneq ($(UNITTEST_DIR),)
+ifneq ($(FUNCTEST_DIR),)
+	@echo " tests.venv                : Execute the unittests and the functional-tests."
+	@echo " tests-coverage.venv       : Execute the unittests and the functional-tests and collect"
+	@echo "                             the code coverage."
+endif
 	@echo " unittests.venv            : Execute the unittests."
+	@echo " unittests-coverage.venv   : Execute the unittests and collect the code coverage."
+endif
+ifneq ($(FUNCTEST_DIR),)
+	@echo " functional-tests.venv          : Execute the functional tests."
+	@echo " functional-tests-coverage.venv : Execute the functional tests and collect the code coverage."
+endif
 	@echo ""
+endif
 ifneq ($(DOC_SUPPORT),)
 	@echo "Targets for Documentation Generation:"
 	@echo " apidoc.venv               : Generate the API documentation."
@@ -216,7 +243,7 @@ distclean: clean
 
 clean:
 	@$(call RMDIR,$(VENV_DIR) dist build doc/build doc/*coverage doc/source/apidoc)
-	@$(call RMFILE,.coverage .coverage-* *.spec)
+	@$(call RMFILE,.coverage* .coverage-* *.spec)
 	@$(call RMDIRR,__pycache__)
 	@$(call RMDIRR,*.egg-info)
 	@$(call RMFILER,*~)
