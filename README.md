@@ -22,35 +22,52 @@ To use this framework, you should add it as a git submodule to your repository:
 
     $ git submodule add https://github.com/seeraven/make4py .make4py
     $ git commit -m "feature: Added make4py submodule."
-    
 
-## How the Suffixes Work
+Then you should copy the contents of the `templates` directory into your project
+repository and adjust the following files:
 
-%.venv: venv
-    <Enter venv and execute make stem>
+  - `Makefile`
+  - `pyproject.toml`
+  - The documentation and manpage of the `doc` directory, especially the
+    reference to the API documentation in `doc/source/development.rst`.
 
-venv: $(VENV_DIR)
+The layout of the sources is as follows:
 
-$(VENV_DIR): $(PIP_DEV_REQUIREMENTS)
-    <Recreate venv>
+  - `src` contains your main script and all your custom modules.
+  - `test/unittests` contains the unit tests.
+  - `test/functional_tests` contains the functional tests. With functional tests
+     we refer to tests of the main script from a user perspective, without testing
+     any internas (as they should already be tested by the unit tests). The
+     functional tests can also be used to test the generated distributables.
 
-$(PIP_DEV_REQUIREMENTS): $(PIP_DEPS_VENV_DIR) pyproject.toml
-    <Enter pip-deps-venv and compile deps>
+Once everything is set up, you should be able to get the help by calling
 
-$(PIP_DEPS_VENV_DIR):
-    <Recreate venv for pip-deps>
-
-check-style.venv:
-  venv/$(VENV_DIR)
-    $(PIP_DEV_REQUIREMENTS):
-      $(PIP_DEPS_VENV_DIR):
-        Create venv for pip-deps
-      Enter pip-deps-venv and compile deps
-    Recreate venv
-  Enter venv and execute make check-style in it
+    $ make help
+    $ make help-all
 
 
-releases/...Ubuntu20.04:
+## Configuration of your Project
+
+You can overwrite the defaults of make4py by set the corresponding variable *before*
+including the `.make4py/make4py.mk` file in your `Makefile`. The following configuration
+variables are supported:
+
+| Makefile Variable      | Default Value                 | Description                                                      |
+|------------------------|-------------------------------|------------------------------------------------------------------|
+| `ALL_TARGET`           | `help`                        | The default target run when no target is specified.              |
+| `BUILD_DIR`            | `build`                       | The subdirectory used for venvs and pyinstaller envs.            |
+| `UBUNTU_DIST_VERSIONS` | `18.04 20.04 22.04`           | List of Ubuntu versions to support.                              |
+| `PYCODESTYLE_CONFIG`   | `.make4py/.pycodestyle`       | The configuration file for [pycodestyle].                        |
+| `SRC_DIRS`             | `src test`                    | A list of directories containing the source files.               |
+| `DOC_MODULES`          | all modules under `src`       | A list of modules to document.                                   |
+| `UNITTEST_DIR`         | `test/unittests`              | The directory of the unit tests.                                 |
+| `FUNCTEST_DIR`         | `test/functional_tests`       | The directory of the functional tests.                           |
+| `RELEASE_DIR`          | `releases`                    | The subdirectory used to store the distributables.               |
+| `PYINSTALLER_ARGS`     | `--clean --onefile`           | Arguments to [pyInstaller].                                      |
+| `USE_VENV`             | `1`                           | If set to `1` a venv is used (highly recommended).               |
+| `PIP_DEPS_DIR`         | `pip_deps`                    | The subdirectory used to store the pip-dependencies.             |
+| `DOCKER_STAMPS_DIR`    | `.dockerstamps`               | The subdirectory used to store the stamps for the docker images. |
+| `MAKE4PY_DOCKER_IMAGE` | `make4py`                     | The name of the generated docker images.                         |
 
 
 [pyInstaller]: https://pyinstaller.org/en/stable/
