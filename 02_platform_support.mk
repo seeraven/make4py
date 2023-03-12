@@ -74,6 +74,12 @@ else
     MOVE     = mv $1 $2
 endif
 
+ifeq ($(IN_DOCKER),1)
+    PLATFORM_SUFFIX := _docker
+else
+    PLATFORM_SUFFIX :=
+endif
+
 
 # ----------------------------------------------------------------------------
 #  EOF

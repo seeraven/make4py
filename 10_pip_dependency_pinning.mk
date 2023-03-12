@@ -18,11 +18,11 @@ PIP_REQUIREMENTS     := $(PIP_DEPS_DIR)/requirements-$(PIP_ENV_ID).txt
 PIP_DEV_REQUIREMENTS := $(PIP_DEPS_DIR)/dev_requirements-$(PIP_ENV_ID).txt
 
 ifeq ($(ON_WINDOWS),1)
-    PIP_DEPS_VENV_DIR := $(BUILD_DIR)\venv_pipdeps_$(WIN_PLATFORM_STRING)
+    PIP_DEPS_VENV_DIR := $(BUILD_DIR)\venv_pipdeps_$(WIN_PLATFORM_STRING)$(PLATFORM_SUFFIX)
     PIP_DEPS_VENV_ACTIVATE := $(PIP_DEPS_VENV_DIR)\Scripts\activate.bat
     PIP_DEPS_VENV_ACTIVATE_PLUS := $(PIP_DEPS_VENV_ACTIVATE) &
 else
-    PIP_DEPS_VENV_DIR := $(BUILD_DIR)/venv_pipdeps_$(LINUX_PLATFORM_STRING)
+    PIP_DEPS_VENV_DIR := $(BUILD_DIR)/venv_pipdeps_$(LINUX_PLATFORM_STRING)$(PLATFORM_SUFFIX)
     PIP_DEPS_VENV_ACTIVATE := source $(PIP_DEPS_VENV_DIR)/bin/activate
     PIP_DEPS_VENV_ACTIVATE_PLUS := $(PIP_DEPS_VENV_ACTIVATE);
 endif
@@ -53,7 +53,7 @@ $(PIP_REQUIREMENTS): pyproject.toml
 	@$(PIP_DEPS_VENV_ACTIVATE_PLUS) pip-compile pyproject.toml \
 	    --resolver=backtracking \
 	    --output-file=$(PIP_REQUIREMENTS) \
-	    --no-emit-trusted-host --no-emit-index-url --quiet
+	    --no-emit-trusted-host --no-emit-index-url --no-header --quiet
 	@$(call RMDIR,$(PIP_DEPS_VENV_DIR))
 
 $(PIP_DEV_REQUIREMENTS): pyproject.toml
@@ -67,7 +67,7 @@ $(PIP_DEV_REQUIREMENTS): pyproject.toml
 	    --extra dev \
 	    --extra test \
 	    --output-file=$(PIP_DEV_REQUIREMENTS) \
-	    --no-emit-trusted-host --no-emit-index-url --quiet
+	    --no-emit-trusted-host --no-emit-index-url --no-header --quiet
 	@$(call RMDIR,$(PIP_DEPS_VENV_DIR))
 
 .PHONY: pip-deps-upgrade
@@ -81,13 +81,13 @@ pip-deps-upgrade:
 	@$(PIP_DEPS_VENV_ACTIVATE_PLUS) pip-compile pyproject.toml \
 	    --resolver=backtracking \
 	    --output-file=$(PIP_REQUIREMENTS) \
-	    --no-emit-trusted-host --no-emit-index-url --quiet --upgrade
+	    --no-emit-trusted-host --no-emit-index-url --no-header --quiet --upgrade
 	@$(PIP_DEPS_VENV_ACTIVATE_PLUS) pip-compile pyproject.toml \
 	    --resolver=backtracking \
 	    --extra dev \
 	    --extra test \
 	    --output-file=$(PIP_DEV_REQUIREMENTS) \
-	    --no-emit-trusted-host --no-emit-index-url --quiet --upgrade
+	    --no-emit-trusted-host --no-emit-index-url --no-header --quiet --upgrade
 	@$(call RMDIR,$(PIP_DEPS_VENV_DIR))
 
 ifeq ($(ON_WINDOWS),0)

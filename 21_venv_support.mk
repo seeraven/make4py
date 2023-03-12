@@ -14,13 +14,13 @@
 # ----------------------------------------------------------------------------
 
 ifeq ($(ON_WINDOWS),1)
-    VENV_DIR := $(BUILD_DIR)\venv_$(WIN_PLATFORM_STRING)
+    VENV_DIR := $(BUILD_DIR)\venv_$(WIN_PLATFORM_STRING)$(PLATFORM_SUFFIX)
     VENV_ACTIVATE := $(VENV_DIR)\Scripts\activate.bat
     VENV_ACTIVATE_PLUS := $(VENV_ACTIVATE) &
     VENV_SHELL := cmd.exe /K $(VENV_ACTIVATE)
     INTERACTIVE_SHELL := cmd.exe
 else
-    VENV_DIR := $(BUILD_DIR)/venv_$(LINUX_PLATFORM_STRING)
+    VENV_DIR := $(BUILD_DIR)/venv_$(LINUX_PLATFORM_STRING)$(PLATFORM_SUFFIX)
     VENV_ACTIVATE := source $(VENV_DIR)/bin/activate
     VENV_ACTIVATE_PLUS := $(VENV_ACTIVATE);
     VENV_SHELL := $(VENV_ACTIVATE_PLUS) /bin/bash

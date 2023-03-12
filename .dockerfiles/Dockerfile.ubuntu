@@ -37,5 +37,8 @@ ARG TGT_UID
 RUN groupadd --gid $TGT_GID dockeruser
 RUN useradd --gid $TGT_GID --uid $TGT_UID --shell /bin/bash --create-home dockeruser
 
+# To distinguish between running in a docker and running on the host:
+ENV IN_DOCKER=1
+
 # For PyQt5 applications:
 ENV QT_QPA_PLATFORM=minimal
