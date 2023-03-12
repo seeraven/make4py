@@ -10,16 +10,24 @@
 
 
 # ----------------------------------------------------------------------------
-#  DEFAULT SETTINGS
+#  FIRST INCLUDE BLOCK
 # ----------------------------------------------------------------------------
 MAKE4PY_DIR            := $(dir $(lastword $(MAKEFILE_LIST)))
 MAKE4PY_DIR_ABS        := $(abspath $(MAKE4PY_DIR))
 
+include $(MAKE4PY_DIR)01_check_settings.mk
+include $(MAKE4PY_DIR)02_platform_support.mk
+
+
+# ----------------------------------------------------------------------------
+#  DEFAULT SETTINGS
+# ----------------------------------------------------------------------------
 ALL_TARGET             := $(or $(ALL_TARGET),help)
 BUILD_DIR              := $(or $(BUILD_DIR),build)
 UBUNTU_DIST_VERSIONS   := $(or $(UBUNTU_DIST_VERSIONS),18.04 20.04 22.04)
 PYCODESTYLE_CONFIG     := $(or $(PYCODESTYLE_CONFIG),$(MAKE4PY_DIR)/.pycodestyle)
 SRC_DIRS               := $(or $(SRC_DIRS),$(wildcard src/. test/.))
+SOURCES                := $(or $(SOURCES),$(SCRIPT) $(call rwildcard,$(SRC_DIRS),*.py))
 DOC_SUPPORT            := $(wildcard doc/*/conf.py)
 DOC_MODULES            := $(or $(DOC_MODULES),$(dir $(wildcard src/*/__init__.py)))
 UNITTEST_DIR           := $(or $(UNITTEST_DIR),$(wildcard test/unittests/.))
@@ -28,10 +36,13 @@ TEST_SUPPORT           := $(or $(UNITTEST_DIR),$(FUNCTEST_DIR))
 RELEASE_DIR            := $(or $(RELEASE_DIR),releases)
 PYINSTALLER_ARGS       := $(or $(PYINSTALLER_ARGS),--clean --onefile)
 USE_VENV               := $(or $(USE_VENV),1)
+CLEAN_FILES            := $(or $(CLEAN_FILES),)
+CLEAN_DIRS             := $(or $(CLEAN_DIRS),)
+CLEAN_DIRS_RECURSIVE   := $(or $(CLEAN_DIRS_RECURSIVE),)
 
 
 # ----------------------------------------------------------------------------
-#  DEFAULT TARGET
+#  DEFAULT TARGET (FIRST TARGET)
 # ----------------------------------------------------------------------------
 .PHONY: all
 
@@ -39,10 +50,8 @@ all: $(ALL_TARGET)
 
 
 # ----------------------------------------------------------------------------
-#  INCLUDE MODULES
+#  SECOND INCLUDE BLOCK
 # ----------------------------------------------------------------------------
-include $(MAKE4PY_DIR)01_check_settings.mk
-include $(MAKE4PY_DIR)02_platform_support.mk
 include $(MAKE4PY_DIR)03_ensure_python_version.mk
 include $(MAKE4PY_DIR)10_pip_dependency_pinning.mk
 include $(MAKE4PY_DIR)20_system_setup.mk
@@ -260,10 +269,11 @@ distclean: clean
 	@$(call RMDIRR,.mypy_cache)
 
 clean:
-	@$(call RMDIR,$(VENV_DIR) dist build doc/build doc/*coverage doc/source/apidoc)
-	@$(call RMFILE,.coverage* .coverage-* *.spec)
+	@$(call RMDIR,$(VENV_DIR) .pytest_cache dist build doc/build doc/*coverage doc/source/apidoc $(CLEAN_DIRS))
+	@$(call RMFILE,.coverage* .coverage-* *.spec $(CLEAN_FILES))
 	@$(call RMDIRR,__pycache__)
 	@$(call RMDIRR,*.egg-info)
+	@$(foreach d,$(CLEAN_DIRS_RECURSIVE),$(call RMDIRR,$d))
 	@$(call RMFILER,*~)
 	@$(call RMFILER,*.pyc)
 

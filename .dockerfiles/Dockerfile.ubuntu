@@ -21,8 +21,10 @@ RUN DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
 RUN DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     apt-get -y dist-upgrade
 
+ARG ADDITIONAL_PACKAGES=
+
 RUN DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
-    apt-get -y install lsb-release make binutils
+    apt-get -y install lsb-release make binutils $ADDITIONAL_PACKAGES
 
 RUN ln -sf bash /bin/sh
 
@@ -34,3 +36,6 @@ ARG TGT_UID
 
 RUN groupadd --gid $TGT_GID dockeruser
 RUN useradd --gid $TGT_GID --uid $TGT_UID --shell /bin/bash --create-home dockeruser
+
+# For PyQt5 applications:
+ENV QT_QPA_PLATFORM=minimal

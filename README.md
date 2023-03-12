@@ -59,6 +59,7 @@ variables are supported:
 | `UBUNTU_DIST_VERSIONS` | `18.04 20.04 22.04`           | List of Ubuntu versions to support.                              |
 | `PYCODESTYLE_CONFIG`   | `.make4py/.pycodestyle`       | The configuration file for [pycodestyle].                        |
 | `SRC_DIRS`             | `src test`                    | A list of directories containing the source files.               |
+| `SOURCES`              | `src/**/*.py test/**/*.py`    | A list of sources to model the dependencies of the target.       |
 | `DOC_MODULES`          | all modules under `src`       | A list of modules to document.                                   |
 | `UNITTEST_DIR`         | `test/unittests`              | The directory of the unit tests.                                 |
 | `FUNCTEST_DIR`         | `test/functional_tests`       | The directory of the functional tests.                           |
@@ -68,6 +69,11 @@ variables are supported:
 | `PIP_DEPS_DIR`         | `pip_deps`                    | The subdirectory used to store the pip-dependencies.             |
 | `DOCKER_STAMPS_DIR`    | `.dockerstamps`               | The subdirectory used to store the stamps for the docker images. |
 | `MAKE4PY_DOCKER_IMAGE` | `make4py`                     | The name of the generated docker images.                         |
+| `MAKE4PY_DOCKER_PKGS`  |                               | An optional list of additional ubuntu packages to install.       |
+| `VAGRANTFILE`          | `.make4py/Vagrantfile.win`    | Overwrite the Vagrantfile used for the windows environment.      |
+| `CLEAN_FILES`          |                               | An additional list of files to clean by `make clean`.            |
+| `CLEAN_DIRS`           |                               | An additional list of directories to clean by `make clean`.      |
+| `CLEAN_DIRS_RECURSIVE` |                               | An additional list of directory names to clean by `make clean`.  |
 
 
 [pyInstaller]: https://pyinstaller.org/en/stable/

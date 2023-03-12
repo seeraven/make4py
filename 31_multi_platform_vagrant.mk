@@ -11,7 +11,7 @@
 
 ifeq ($(ON_WINDOWS),0)
 
-VAGRANTFILE := $(MAKE4PY_DIR_ABS)/Vagrantfile.win
+VAGRANTFILE := $(or $(VAGRANTFILE),$(MAKE4PY_DIR_ABS)/Vagrantfile.win)
 
 .PHONY: destroy-windows update-windows-box ssh-windows-box
 

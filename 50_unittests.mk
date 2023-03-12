@@ -21,10 +21,10 @@ unittests-coverage: unittests-coverage.venv
 
 else
 
-unittests:
+unittests: $(SOURCES)
 	@pytest $(UNITTEST_DIR)
 
-unittests-coverage:
+unittests-coverage: $(SOURCES)
 	@$(call RMFILE,.coverage.unittests)
 	@$(call RMDIR,doc/unittests-coverage)
 	@COVERAGE_FILE=.coverage.unittests \

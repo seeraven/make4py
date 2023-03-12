@@ -23,19 +23,19 @@ mypy: mypy.venv
 
 else
 
-pylint:
+pylint: $(SOURCES)
 	@pylint --recursive=true $(SRC_DIRS)
 	@echo "pylint found no errors."
 
-pycodestyle:
+pycodestyle: $(SOURCES)
 	@pycodestyle --config=$(PYCODESTYLE_CONFIG) $(SRC_DIRS)
 	@echo "pycodestyle found no errors."
 
-flake8:
+flake8: $(SOURCES)
 	@flake8 $(SRC_DIRS)
 	@echo "flake8 found no errors."
 
-mypy:
+mypy: $(SOURCES)
 	@mypy $(SRC_DIRS)
 	@echo "mypy found no errors."
 

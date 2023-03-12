@@ -30,7 +30,7 @@ man: man.venv
 
 else
 
-apidoc:
+apidoc: $(SOURCES)
 	@$(call RMDIR,doc/source/apidoc)
 	@$(SET_PYTHONPATH) sphinx-apidoc -f -M -T -o doc/source/apidoc $(DOC_MODULES)
 

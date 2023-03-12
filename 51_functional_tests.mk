@@ -20,10 +20,10 @@ functional-tests-coverage: functional-tests-coverage.venv
 
 else
 
-functional-tests:
+functional-tests: $(SOURCES)
 	@pytest $(FUNCTEST_DIR)
 
-functional-tests-coverage:
+functional-tests-coverage: $(SOURCES)
 	@$(call RMFILE,.coverage.functests)
 	@$(call RMDIR,doc/functional-tests-coverage)
 	@COVERAGE_FILE=.coverage.functests \

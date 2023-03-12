@@ -61,7 +61,7 @@ $(CURRENT_RELEASE_FILE):
 
 else
 
-$(CURRENT_RELEASE_FILE):
+$(CURRENT_RELEASE_FILE): $(SOURCES)
 	@$(call RMFILE,$(DIST_FILE))
 	@pyinstaller $(PYINSTALLER_ARGS) --workpath $(PYINSTALLER_WORK_DIR) --name $(APP_NAME) $(SCRIPT)
 	@$(call MKDIR,releases)
