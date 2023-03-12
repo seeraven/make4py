@@ -17,10 +17,6 @@ pip-setup:
 	@echo "-------------------------------------------------------------"
 # Note: pip install -U pip had problems running on Windows, so we use now:
 	@$(PYTHON) -m pip install --upgrade pip
-	@echo "-------------------------------------------------------------"
-	@echo "Installing pip-tools..."
-	@echo "-------------------------------------------------------------"
-	@pip install pip-tools
 
 pip-install-dev: $(PIP_DEV_REQUIREMENTS)
 	@echo "-------------------------------------------------------------"

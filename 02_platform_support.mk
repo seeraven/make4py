@@ -20,6 +20,26 @@ endif
 
 
 # ----------------------------------------------------------------------------
+#  VENV Detection
+# ----------------------------------------------------------------------------
+ifdef VIRTUAL_ENV
+    IN_VENV        := 1
+    SWITCH_TO_VENV := 0
+else
+    IN_VENV        := 0
+    SWITCH_TO_VENV := $(USE_VENV)
+endif
+
+
+# ----------------------------------------------------------------------------
+#  FUNCTIONS
+# ----------------------------------------------------------------------------
+
+# Recursive wildcard function. Call with: $(call rwildcard,<start dir>,<pattern>)
+rwildcard = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+
+
+# ----------------------------------------------------------------------------
 #  SETTINGS
 # ----------------------------------------------------------------------------
 
@@ -35,9 +55,15 @@ ifeq ($(ON_WINDOWS),1)
     RMFILER  = del /Q /S $(call FIX_PATH,$1) 2>nul || ver >nul
     MKDIR    = mkdir $(call FIX_PATH,$1) || ver >nul
     COPY     = copy $(call FIX_PATH,$1) $(call FIX_PATH,$2)
+    MOVE     = move $(call FIX_PATH,$1) $(call FIX_PATH,$2)
 else
-    SHELL   = /bin/bash
+    SHELL  = /bin/bash
     PYTHON := python3
+    ifeq (, $(shell which lsb_release))
+        LINUX_PLATFORM_STRING := unknown_$(shell uname -m)
+    else
+        LINUX_PLATFORM_STRING := $(shell lsb_release -i -s)$(shell lsb_release -r -s)_$(shell uname -m)
+    endif
     SET_PYTHONPATH := PYTHONPATH=$(PYTHONPATH)
     RMDIR    = rm -rf $1
     RMDIRR   = find . -name "$1" -exec rm -rf {} \; 2>/dev/null || true
@@ -45,6 +71,7 @@ else
     RMFILER  = find . -iname "$1" -exec rm -f {} \;
     MKDIR    = mkdir -p $1
     COPY     = cp -a $1 $2
+    MOVE     = mv $1 $2
 endif
 
 

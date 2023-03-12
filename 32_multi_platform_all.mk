@@ -9,25 +9,15 @@
 # ----------------------------------------------------------------------------
 
 
-.PHONY: check-style pylint pycodestyle flake8 mypy
+ifeq ($(ON_WINDOWS),0)
 
-check-style: pylint pycodestyle flake8 mypy
+%.all:
+	@make $(foreach UBUNTU_VERSION,$(UBUNTU_DIST_VERSIONS), \
+	  $*.ubuntu$(UBUNTU_VERSION) \
+	)
+	@make $*.windows
 
-pylint:
-	@pylint --recursive=true $(SRC_DIRS)
-	@echo "pylint found no errors."
-
-pycodestyle:
-	@pycodestyle --config=$(PYCODESTYLE_CONFIG) $(SRC_DIRS)
-	@echo "pycodestyle found no errors."
-
-flake8:
-	@flake8 $(SRC_DIRS)
-	@echo "flake8 found no errors."
-
-mypy:
-	@mypy $(SRC_DIRS)
-	@echo "mypy found no errors."
+endif
 
 
 # ----------------------------------------------------------------------------

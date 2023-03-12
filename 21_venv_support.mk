@@ -14,19 +14,17 @@
 # ----------------------------------------------------------------------------
 
 ifeq ($(ON_WINDOWS),1)
-    VENV_DIR := venv_$(WIN_PLATFORM_STRING)
+    VENV_DIR := $(BUILD_DIR)\venv_$(WIN_PLATFORM_STRING)
     VENV_ACTIVATE := $(VENV_DIR)\Scripts\activate.bat
     VENV_ACTIVATE_PLUS := $(VENV_ACTIVATE) &
     VENV_SHELL := cmd.exe /K $(VENV_ACTIVATE)
+    INTERACTIVE_SHELL := cmd.exe
 else
-    ifeq (, $(shell which lsb_release))
-        VENV_DIR := venv
-    else
-        VENV_DIR := venv_$(shell lsb_release -i -s)$(shell lsb_release -r -s)
-    endif
+    VENV_DIR := $(BUILD_DIR)/venv_$(LINUX_PLATFORM_STRING)
     VENV_ACTIVATE := source $(VENV_DIR)/bin/activate
     VENV_ACTIVATE_PLUS := $(VENV_ACTIVATE);
     VENV_SHELL := $(VENV_ACTIVATE_PLUS) /bin/bash
+    INTERACTIVE_SHELL := /bin/bash
 endif
 
 
@@ -47,17 +45,31 @@ $(VENV_DIR):
 
 venv: $(VENV_DIR)
 
+
+ifeq ($(SWITCH_TO_VENV),1)
 venv-bash: venv
 	@echo "Entering a new shell using the venv setup:"
 	@$(VENV_SHELL)
 	@echo "Leaving sandbox shell."
 
-ipython:
+ipython: venv
 	@$(VENV_ACTIVATE_PLUS) \
 	ipython
+else
+venv-bash:
+	@echo "Opening a new subshell in the existing venv setup:"
+	@$(INTERACTIVE_SHELL)
+	@echo "Leaving subshell."
+
+ipython:
+	@ipython
+endif
+
 
 %.venv: venv
-	$(VENV_ACTIVATE_PLUS) make $*
+	@echo "Entering venv $(VENV_DIR):"
+	@$(VENV_ACTIVATE_PLUS) make $*
+	@echo "Leaving venv $(VENV_DIR)."
 
 
 # ----------------------------------------------------------------------------

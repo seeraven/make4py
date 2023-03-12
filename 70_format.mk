@@ -9,18 +9,46 @@
 # ----------------------------------------------------------------------------
 
 
-ifneq ($(UNITTEST_DIR),)
+.PHONY: format black isort \
+	format-check black-check isort-check \
+	format-diff black-diff isort-diff
 
-.PHONY: unittests unittests-coverage
+format: black isort
 
-unittests:
-	@pytest $(UNITTEST_DIR)
+format-check: black-check isort-check
 
-unittests-coverage:
-	@$(call RMFILE,.coverage.unittests)
-	@$(call RMDIR,doc/unittests-coverage)
-	@COVERAGE_FILE=.coverage.unittests \
-	pytest --cov --cov-report=term --cov-report=html:doc/unittests-coverage $(UNITTEST_DIR)
+format-diff: black-diff isort-diff
+
+
+ifeq ($(SWITCH_TO_VENV),1)
+
+black: black.venv
+black-check: black-check.venv
+black-diff: black-diff.venv
+isort: isort.venv
+isort-check: isort-check.venv
+isort-diff: isort-diff.venv
+
+else
+
+black:
+	@black $(SRC_DIRS)
+
+black-check:
+	@black --check $(SRC_DIRS)
+
+black-diff:
+	@black --diff $(SRC_DIRS)
+
+
+isort:
+	@isort $(SRC_DIRS)
+
+isort-check:
+	@isort --check $(SRC_DIRS)
+
+isort-diff:
+	@isort --diff $(SRC_DIRS)
 
 endif
 

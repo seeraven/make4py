@@ -24,6 +24,34 @@ To use this framework, you should add it as a git submodule to your repository:
     $ git commit -m "feature: Added make4py submodule."
     
 
+## How the Suffixes Work
+
+%.venv: venv
+    <Enter venv and execute make stem>
+
+venv: $(VENV_DIR)
+
+$(VENV_DIR): $(PIP_DEV_REQUIREMENTS)
+    <Recreate venv>
+
+$(PIP_DEV_REQUIREMENTS): $(PIP_DEPS_VENV_DIR) pyproject.toml
+    <Enter pip-deps-venv and compile deps>
+
+$(PIP_DEPS_VENV_DIR):
+    <Recreate venv for pip-deps>
+
+check-style.venv:
+  venv/$(VENV_DIR)
+    $(PIP_DEV_REQUIREMENTS):
+      $(PIP_DEPS_VENV_DIR):
+        Create venv for pip-deps
+      Enter pip-deps-venv and compile deps
+    Recreate venv
+  Enter venv and execute make check-style in it
+
+
+releases/...Ubuntu20.04:
+
 
 [pyInstaller]: https://pyinstaller.org/en/stable/
 [pylint]: https://www.pylint.org/

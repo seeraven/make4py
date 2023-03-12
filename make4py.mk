@@ -16,6 +16,7 @@ MAKE4PY_DIR            := $(dir $(lastword $(MAKEFILE_LIST)))
 MAKE4PY_DIR_ABS        := $(abspath $(MAKE4PY_DIR))
 
 ALL_TARGET             := $(or $(ALL_TARGET),help)
+BUILD_DIR              := $(or $(BUILD_DIR),build)
 UBUNTU_DIST_VERSIONS   := $(or $(UBUNTU_DIST_VERSIONS),18.04 20.04 22.04)
 PYCODESTYLE_CONFIG     := $(or $(PYCODESTYLE_CONFIG),$(MAKE4PY_DIR)/.pycodestyle)
 SRC_DIRS               := $(or $(SRC_DIRS),$(wildcard src/. test/.))
@@ -24,6 +25,9 @@ DOC_MODULES            := $(or $(DOC_MODULES),$(dir $(wildcard src/*/__init__.py
 UNITTEST_DIR           := $(or $(UNITTEST_DIR),$(wildcard test/unittests/.))
 FUNCTEST_DIR           := $(or $(FUNCTEST_DIR),$(wildcard test/functional_tests/.))
 TEST_SUPPORT           := $(or $(UNITTEST_DIR),$(FUNCTEST_DIR))
+RELEASE_DIR            := $(or $(RELEASE_DIR),releases)
+PYINSTALLER_ARGS       := $(or $(PYINSTALLER_ARGS),--clean --onefile)
+USE_VENV               := $(or $(USE_VENV),1)
 
 
 # ----------------------------------------------------------------------------
@@ -40,35 +44,19 @@ all: $(ALL_TARGET)
 include $(MAKE4PY_DIR)01_check_settings.mk
 include $(MAKE4PY_DIR)02_platform_support.mk
 include $(MAKE4PY_DIR)03_ensure_python_version.mk
-include $(MAKE4PY_DIR)04_pip_dependency_pinning.mk
-include $(MAKE4PY_DIR)05_system_setup.mk
-include $(MAKE4PY_DIR)06_venv_support.mk
-include $(MAKE4PY_DIR)07_multi_platform_docker.mk
-include $(MAKE4PY_DIR)08_multi_platform_vagrant.mk
-include $(MAKE4PY_DIR)09_check_style.mk
-include $(MAKE4PY_DIR)10_unittests.mk
-include $(MAKE4PY_DIR)11_functional_tests.mk
-include $(MAKE4PY_DIR)12_documentation.mk
-include $(MAKE4PY_DIR)13_format.mk
-include $(MAKE4PY_DIR)14_distribution.mk
-
-# TODO:
-# - pyinstaller call
-
-
-# ----------------------------------------------------------------------------
-#  FUNCTIONS
-# ----------------------------------------------------------------------------
-
-# Recursive wildcard function. Call with: $(call rwildcard,<start dir>,<pattern>)
-rwildcard = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
-
-
-# ----------------------------------------------------------------------------
-#  SETTINGS
-# ----------------------------------------------------------------------------
-
-UBUNTU_RELEASE_TARGETS := $(addprefix releases/$(APP_NAME)_v$(APP_VERSION)_Ubuntu,$(addsuffix _amd64,$(UBUNTU_DIST_VERSIONS)))
+include $(MAKE4PY_DIR)10_pip_dependency_pinning.mk
+include $(MAKE4PY_DIR)20_system_setup.mk
+include $(MAKE4PY_DIR)21_venv_support.mk
+include $(MAKE4PY_DIR)30_multi_platform_docker.mk
+include $(MAKE4PY_DIR)31_multi_platform_vagrant.mk
+include $(MAKE4PY_DIR)32_multi_platform_all.mk
+include $(MAKE4PY_DIR)40_check_style.mk
+include $(MAKE4PY_DIR)50_unittests.mk
+include $(MAKE4PY_DIR)51_functional_tests.mk
+include $(MAKE4PY_DIR)60_documentation.mk
+include $(MAKE4PY_DIR)70_format.mk
+include $(MAKE4PY_DIR)80_distribution.mk
+include $(MAKE4PY_DIR)81_release_tests.mk
 
 
 # ----------------------------------------------------------------------------
@@ -85,13 +73,25 @@ help:
 	@echo "                             supported Ubuntu versions are $(UBUNTU_DIST_VERSIONS)"
 	@echo " .windows                  : Execute the make target in a vagrant"
 	@echo "                             box running Windows."
+	@echo " .all                      : Execute the make target on all platforms."
 	@echo " .venv                     : Execute the make target in a virtual environment (venv)."
+ifeq ($(USE_VENV),1)
+	@echo "                             Note: Usually you do not need to specify this as this"
+	@echo "                             project is already configured to use a venv automatically!"
+endif
 	@echo ""
 	@echo " Multiple suffixes can be used that are processed from right to left, e.g.,"
 	@echo " the target pip-deps-upgrade.venv.windows runs pip-deps-upgrade.venv in"
 	@echo " a Windows vagrant box which in turn runs the target pip-deps-upgrade in"
 	@echo " a venv."
 	@echo ""
+ifeq ($(USE_VENV),0)
+	@echo "WARNING:"
+	@echo " This project is configured to NOT use virtual environments, which means"
+	@echo " that all targets are executed within the host environment unless you use"
+	@echo " the '.venv' suffix!"
+	@echo ""
+endif
 	@echo "Note: In the following, the high-level targets are specified with the"
 	@echo "      recommended environment. Call 'make help-all' to see all available"
 	@echo "      targets."
@@ -100,33 +100,35 @@ help:
 	@echo " help-all                  : Describe all targets."
 	@echo " pip-deps-upgrade-all      : Update the pip-dependencies in all"
 	@echo "                             supported environments."
-	@echo " format.venv               : Call black and isort on the source files."
-	@echo " check-style.venv          : Call pylint, pycodestyle, flake8 and mypy."
+	@echo " format                    : Call black and isort on the source files."
+	@echo " check-style               : Call pylint, pycodestyle, flake8 and mypy."
 ifneq ($(UNITTEST_DIR),)
   ifneq ($(FUNCTEST_DIR),)
-	@echo " tests.venv                : Execute the unittests and functional tests."
-	@echo " tests-coverage.venv       : Execute the unittests and functional tests"
+	@echo " tests                     : Execute the unittests and functional tests."
+	@echo " tests-coverage            : Execute the unittests and functional tests"
 	@echo "                             and collect the code coverage."
   else
-	@echo " unittests.venv            : Execute the unittests."
-	@echo " unittests-coverage.venv   : Execute the unittests and collect the code coverage."
+	@echo " unittests                 : Execute the unittests."
+	@echo " unittests-coverage        : Execute the unittests and collect the code coverage."
   endif
 else
   ifneq ($(FUNCTEST_DIR),)
-	@echo " functional-tests.venv          : Execute the functional tests."
-	@echo " functional-tests-coverage.venv : Execute the functional tests and collect the code coverage."
+	@echo " functional-tests               : Execute the functional tests."
+	@echo " functional-tests-coverage      : Execute the functional tests and collect the code coverage."
   endif
 endif
 ifneq ($(DOC_SUPPORT),)
-	@echo " doc.venv                  : Generate the documentation."
-	@echo " man.venv                  : Generate the man page."
+	@echo " doc                       : Generate the documentation."
+	@echo " man                       : Generate the man page."
 endif
+	@echo " releases                  : Build the releases for Linux and Windows."
 	@echo " clean                     : Remove all temporary files."
-	@echo " distclean                 : Like above but also remove releases."
+	@echo " distclean                 : Like above but also remove releases and all venvs."
 ifeq ($(ON_WINDOWS),0)
 	@echo " clean-dockerimages        : Remove all generated docker images."
 endif
 	@echo ""
+
 
 help-all:
 	@echo "Makefile for $(APP_NAME) ($(APP_VERSION)):"
@@ -137,18 +139,27 @@ help-all:
 	@echo "                             supported Ubuntu versions are $(UBUNTU_DIST_VERSIONS)"
 	@echo " .windows                  : Execute the make target in a vagrant"
 	@echo "                             box running Windows."
+	@echo " .all                      : Execute the make target on all platforms."
 	@echo " .venv                     : Execute the make target in a virtual environment (venv)."
+ifeq ($(USE_VENV),1)
+	@echo "                             Note: Usually you do not need to specify this as this"
+	@echo "                             project is already configured to use a venv automatically!"
+endif
 	@echo ""
 	@echo " Multiple suffixes can be used that are processed from right to left, e.g.,"
 	@echo " the target pip-deps-upgrade.venv.windows runs pip-deps-upgrade.venv in"
 	@echo " a Windows vagrant box which in turn runs the target pip-deps-upgrade in"
 	@echo " a venv."
 	@echo ""
-	@echo "Note: In the following, the targets are specified with the recommended"
-	@echo "      environment."
+ifeq ($(USE_VENV),0)
+	@echo "WARNING:"
+	@echo " This project is configured to NOT use virtual environments, which means"
+	@echo " that all targets are executed within the host environment unless you use"
+	@echo " the '.venv' suffix!"
 	@echo ""
+endif
 	@echo "Targets for PIP Dependency Pinning:"
-	@echo " pip-deps-upgrade.venv     : Update the pip-dependencies extracted"
+	@echo " pip-deps-upgrade          : Update the pip-dependencies extracted"
 	@echo "                             from the pyproject.toml for the current"
 	@echo "                             platform. The dependencies are stored in"
 	@echo "                             $(PIP_DEPS_DIR)."
@@ -163,8 +174,8 @@ help-all:
 	@echo ""
 	@echo "Targets for Virtual Environment (venv):"
 	@echo " venv                      : Setup the venv directory $(VENV_DIR)."
-	@echo " venv-bash                 : Open a shell in the venv."
-	@echo " ipython                   : Open ipython in the venv."
+	@echo " venv-bash                 : Open a shell (in the venv)."
+	@echo " ipython                   : Open ipython (in the venv)."
 	@echo ""
 ifeq ($(ON_WINDOWS),0)
 	@echo "Targets for Windows Vagrant Box:"
@@ -174,54 +185,60 @@ ifeq ($(ON_WINDOWS),0)
 	@echo ""
 endif
 	@echo "Targets for Style Checking:"
-	@echo " check-style.venv          : Call pylint, pycodestyle, flake8 and mypy."
-	@echo " pylint.venv               : Call pylint on the source files."
-	@echo " pycodestyle.venv          : Call pycodestyle on the source files."
-	@echo " flake8.venv               : Call flake8 on the source files."
-	@echo " mypy.venv                 : Call mypy on the source files."
+	@echo " check-style               : Call pylint, pycodestyle, flake8 and mypy."
+	@echo " pylint                    : Call pylint on the source files."
+	@echo " pycodestyle               : Call pycodestyle on the source files."
+	@echo " flake8                    : Call flake8 on the source files."
+	@echo " mypy                      : Call mypy on the source files."
 	@echo ""
 	@echo "Targets for Formatting:"
-	@echo " format.venv               : Call black and isort on the source files."
-	@echo " format-check.venv         : Call black and isort to check the formatting"
+	@echo " format                    : Call black and isort on the source files."
+	@echo " format-check              : Call black and isort to check the formatting"
 	@echo "                             of the source files."
-	@echo " format-diff.venv          : Call black and isort to check the formatting"
+	@echo " format-diff               : Call black and isort to check the formatting"
 	@echo "                             of the source files and print the differences."
-	@echo " black.venv                : Call black on the source files."
-	@echo " black-check.venv          : Call black to check the formatting of the source files."
-	@echo " black-diff.venv           : Call black to check the formatting of the source files"
+	@echo " black                     : Call black on the source files."
+	@echo " black-check               : Call black to check the formatting of the source files."
+	@echo " black-diff                : Call black to check the formatting of the source files"
 	@echo "                             and print the differences."
-	@echo " isort.venv                : Call isort on the source files."
-	@echo " isort-check.venv          : Call isort to check the formatting of the source files."
-	@echo " isort-diff.venv           : Call isort to check the formatting of the source files"
+	@echo " isort                     : Call isort on the source files."
+	@echo " isort-check               : Call isort to check the formatting of the source files."
+	@echo " isort-diff                : Call isort to check the formatting of the source files"
 	@echo "                             and print the differences."
 	@echo ""
 ifneq ($(TEST_SUPPORT),)
 	@echo "Targets for Testing:"
 ifneq ($(UNITTEST_DIR),)
 ifneq ($(FUNCTEST_DIR),)
-	@echo " tests.venv                : Execute the unittests and the functional-tests."
-	@echo " tests-coverage.venv       : Execute the unittests and the functional-tests and collect"
+	@echo " tests                     : Execute the unittests and the functional-tests."
+	@echo " tests-coverage            : Execute the unittests and the functional-tests and collect"
 	@echo "                             the code coverage."
 endif
-	@echo " unittests.venv            : Execute the unittests."
-	@echo " unittests-coverage.venv   : Execute the unittests and collect the code coverage."
+	@echo " unittests                 : Execute the unittests."
+	@echo " unittests-coverage        : Execute the unittests and collect the code coverage."
 endif
 ifneq ($(FUNCTEST_DIR),)
-	@echo " functional-tests.venv          : Execute the functional tests."
-	@echo " functional-tests-coverage.venv : Execute the functional tests and collect the code coverage."
+	@echo " functional-tests               : Execute the functional tests."
+	@echo " functional-tests-coverage      : Execute the functional tests and collect the code coverage."
 endif
 	@echo ""
 endif
 ifneq ($(DOC_SUPPORT),)
 	@echo "Targets for Documentation Generation:"
-	@echo " apidoc.venv               : Generate the API documentation."
-	@echo " doc.venv                  : Generate the documentation."
-	@echo " man.venv                  : Generate the man page."
+	@echo " apidoc                    : Generate the API documentation."
+	@echo " doc                       : Generate the documentation."
+	@echo " man                       : Generate the man page."
 	@echo ""
 endif
+	@echo "Targets for Distribution:"
+	@echo " releases                  : Build the releases for Linux and Windows."
+ifneq ($(FUNCTEST_DIR),)
+	@echo " test-releases             : Test the releases with the functional test suite."
+endif
+	@echo ""
 	@echo "Targets for Cleanup:"
 	@echo " clean                     : Remove all temporary files."
-	@echo " distclean                 : Like above but also remove releases."
+	@echo " distclean                 : Like above but also remove releases and all venvs."
 ifeq ($(ON_WINDOWS),0)
 	@echo " clean-dockerimages        : Remove all generated docker images."
 endif
@@ -238,6 +255,7 @@ endif
 # ----------------------------------------------------------------------------
 
 distclean: clean
+	@$(call RMDIRR,build)
 	@$(call RMDIRR,releases)
 	@$(call RMDIRR,.mypy_cache)
 

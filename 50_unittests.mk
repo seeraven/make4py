@@ -9,28 +9,29 @@
 # ----------------------------------------------------------------------------
 
 
-.PHONY: print_appname print_version
+ifneq ($(UNITTEST_DIR),)
 
-print_appname:
-	@echo $(APP_NAME)
-
-print_version:
-	@echo $(APP_VERSION)
+.PHONY: unittests unittests-coverage
 
 
-ifneq ($(DOC_SUPPORT),)
+ifeq ($(SWITCH_TO_VENV),1)
 
-.PHONY: apidoc doc man
+unittests: unittests.venv
+unittests-coverage: unittests-coverage.venv
 
-apidoc:
-	@$(call RMDIR,doc/source/apidoc)
-	@$(SET_PYTHONPATH) sphinx-apidoc -f -M -T -o doc/source/apidoc $(DOC_MODULES)
+else
 
-doc: apidoc
-	@$(SET_PYTHONPATH) sphinx-build -W -b html doc/source doc/build
+unittests:
+	@pytest $(UNITTEST_DIR)
 
-man:
-	@$(SET_PYTHONPATH) sphinx-build -W -b man doc/manpage doc/build
+unittests-coverage:
+	@$(call RMFILE,.coverage.unittests)
+	@$(call RMDIR,doc/unittests-coverage)
+	@COVERAGE_FILE=.coverage.unittests \
+	pytest --cov --cov-report=term --cov-report=html:doc/unittests-coverage $(UNITTEST_DIR)
+
+endif
+
 
 endif
 

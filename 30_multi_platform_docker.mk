@@ -37,10 +37,12 @@ clean-dockerimages:
 
 define MULTI_PLATFORM_RULE =
 %.ubuntu$(1): dockerimage_ubuntu$(1)
-	docker run --rm --user dockeruser \
+	@echo "Entering docker environment $(MAKE4PY_DOCKER_IMAGE):ubuntu$(1)..."
+	@docker run --rm --user dockeruser \
 	            -v $(CURDIR):/workdir \
 	            $(MAKE4PY_DOCKER_IMAGE):ubuntu$(1) \
 	            make -C /workdir $$*
+	@echo "Leaving docker environment $(MAKE4PY_DOCKER_IMAGE):ubuntu$(1)."
 endef
 
 $(foreach UBUNTU_VERSION,$(UBUNTU_DIST_VERSIONS), \

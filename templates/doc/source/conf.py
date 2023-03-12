@@ -30,14 +30,6 @@ rst_epilog += f".. |version| replace:: {version}\n"
 rst_epilog += f".. |release_url| replace:: {release_url}\n"
 rst_epilog += f".. |binary| replace:: :code:`{project}`\n"
 
-# rst_epilog += f".. |linux_install_code| replace::\n"
-# rst_epilog += ".. code-block:: python\n"
-# rst_epilog += "\n"
-# rst_epilog += f"    $ wget {release_url}/download/v{version}/{project}_v{version}_Ubuntu22.04_amd64\n"
-# rst_epilog += f"    $ sudo mv {project}_* /usr/local/bin/{project}\n"
-# rst_epilog += f"    $ sudo chmod +x /usr/local/bin/{project}\n"
-# rst_epilog += "\n"
-
 
 # -- General configuration ---------------------------------------------------
 

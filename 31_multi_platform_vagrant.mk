@@ -16,9 +16,11 @@ VAGRANTFILE := $(MAKE4PY_DIR_ABS)/Vagrantfile.win
 .PHONY: destroy-windows update-windows-box ssh-windows-box
 
 %.windows:
+	@echo "Entering windows environment..."
 	@VAGRANT_VAGRANTFILE=$(VAGRANTFILE) vagrant up
 	@VAGRANT_VAGRANTFILE=$(VAGRANTFILE) vagrant ssh -- make -C C:\\vagrant $*
 	@VAGRANT_VAGRANTFILE=$(VAGRANTFILE) vagrant halt
+	@echo "Leaving windows environment."
 
 
 destroy-windows:

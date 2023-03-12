@@ -13,6 +13,13 @@ ifneq ($(FUNCTEST_DIR),)
 
 .PHONY: functional-tests functional-tests-coverage
 
+ifeq ($(SWITCH_TO_VENV),1)
+
+functional-tests: functional-tests.venv
+functional-tests-coverage: functional-tests-coverage.venv
+
+else
+
 functional-tests:
 	@pytest $(FUNCTEST_DIR)
 
@@ -24,6 +31,8 @@ functional-tests-coverage:
 
 endif
 
+endif
+
 
 ifneq ($(FUNCTEST_DIR),)
 ifneq ($(UNITTEST_DIR),)
@@ -31,11 +40,19 @@ ifneq ($(UNITTEST_DIR),)
 
 tests: unittests functional-tests
 
+ifeq ($(SWITCH_TO_VENV),1)
+
+tests-coverage: tests-coverage.venv
+
+else
+
 tests-coverage: unittests-coverage functional-tests-coverage
 	@coverage combine
 	@coverage report
 	@$(call RMDIR,doc/tests-coverage)
 	@coverage html -d doc/tests-coverage
+
+endif
 
 endif
 endif
