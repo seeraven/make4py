@@ -14,6 +14,7 @@
 # ----------------------------------------------------------------------------
 MAKE4PY_DIR            := $(dir $(lastword $(MAKEFILE_LIST)))
 MAKE4PY_DIR_ABS        := $(abspath $(MAKE4PY_DIR))
+USE_VENV               := $(or $(USE_VENV),1)
 
 include $(MAKE4PY_DIR)01_check_settings.mk
 include $(MAKE4PY_DIR)02_platform_support.mk
@@ -35,7 +36,6 @@ FUNCTEST_DIR           := $(or $(FUNCTEST_DIR),$(wildcard test/functional_tests/
 TEST_SUPPORT           := $(or $(UNITTEST_DIR),$(FUNCTEST_DIR))
 RELEASE_DIR            := $(or $(RELEASE_DIR),releases)
 PYINSTALLER_ARGS       := $(or $(PYINSTALLER_ARGS),--clean --onefile)
-USE_VENV               := $(or $(USE_VENV),1)
 CLEAN_FILES            := $(or $(CLEAN_FILES),)
 CLEAN_DIRS             := $(or $(CLEAN_DIRS),)
 CLEAN_DIRS_RECURSIVE   := $(or $(CLEAN_DIRS_RECURSIVE),)
