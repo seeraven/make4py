@@ -16,6 +16,8 @@ import os
 import platform
 import sys
 
+sys.path.insert(0, os.path.abspath('../../src'))
+
 suppress_warnings = ["autodoc"]
 
 # -- Project information -----------------------------------------------------
