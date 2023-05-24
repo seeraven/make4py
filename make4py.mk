@@ -26,6 +26,7 @@ include $(MAKE4PY_DIR)02_platform_support.mk
 ALL_TARGET             := $(or $(ALL_TARGET),help)
 BUILD_DIR              := $(or $(BUILD_DIR),build)
 UBUNTU_DIST_VERSIONS   := $(or $(UBUNTU_DIST_VERSIONS),18.04 20.04 22.04)
+ENABLE_WINDOWS_SUPPORT := $(or $(ENABLE_WINDOWS_SUPPORT),1)
 PYCODESTYLE_CONFIG     := $(or $(PYCODESTYLE_CONFIG),$(MAKE4PY_DIR)/.pycodestyle)
 SRC_DIRS               := $(or $(SRC_DIRS),$(wildcard src/. test/.))
 SOURCES                := $(or $(SOURCES),$(SCRIPT) $(call rwildcard,$(SRC_DIRS),*.py))
@@ -80,8 +81,10 @@ help:
 	@echo " .ubuntuXX.YY              : Execute the make target in a docker"
 	@echo "                             container running Ubuntu XX.YY. The"
 	@echo "                             supported Ubuntu versions are $(UBUNTU_DIST_VERSIONS)"
+ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 	@echo " .windows                  : Execute the make target in a vagrant"
 	@echo "                             box running Windows."
+endif
 	@echo " .all                      : Execute the make target on all platforms."
 	@echo " .venv                     : Execute the make target in a virtual environment (venv)."
 ifeq ($(USE_VENV),1)
@@ -90,8 +93,8 @@ ifeq ($(USE_VENV),1)
 endif
 	@echo ""
 	@echo " Multiple suffixes can be used that are processed from right to left, e.g.,"
-	@echo " the target pip-deps-upgrade.venv.windows runs pip-deps-upgrade.venv in"
-	@echo " a Windows vagrant box which in turn runs the target pip-deps-upgrade in"
+	@echo " the target pip-deps-upgrade.venv.ubuntu22.04 runs pip-deps-upgrade.venv in"
+	@echo " an Ubuntu 22.04 docker which in turn runs the target pip-deps-upgrade in"
 	@echo " a venv."
 	@echo ""
 ifeq ($(USE_VENV),0)
@@ -130,7 +133,7 @@ ifneq ($(DOC_SUPPORT),)
 	@echo " doc                       : Generate the documentation."
 	@echo " man                       : Generate the man page."
 endif
-	@echo " releases                  : Build the releases for Linux and Windows."
+	@echo " releases                  : Build the releases for all platforms."
 	@echo " clean                     : Remove all temporary files."
 	@echo " distclean                 : Like above but also remove releases and all venvs."
 ifeq ($(ON_WINDOWS),0)
@@ -146,8 +149,10 @@ help-all:
 	@echo " .ubuntuXX.YY              : Execute the make target in a docker"
 	@echo "                             container running Ubuntu XX.YY. The"
 	@echo "                             supported Ubuntu versions are $(UBUNTU_DIST_VERSIONS)"
+ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 	@echo " .windows                  : Execute the make target in a vagrant"
 	@echo "                             box running Windows."
+endif
 	@echo " .all                      : Execute the make target on all platforms."
 	@echo " .venv                     : Execute the make target in a virtual environment (venv)."
 ifeq ($(USE_VENV),1)
@@ -156,8 +161,8 @@ ifeq ($(USE_VENV),1)
 endif
 	@echo ""
 	@echo " Multiple suffixes can be used that are processed from right to left, e.g.,"
-	@echo " the target pip-deps-upgrade.venv.windows runs pip-deps-upgrade.venv in"
-	@echo " a Windows vagrant box which in turn runs the target pip-deps-upgrade in"
+	@echo " the target pip-deps-upgrade.venv.ubuntu22.04 runs pip-deps-upgrade.venv in"
+	@echo " an Ubuntu 22.04 docker which in turn runs the target pip-deps-upgrade in"
 	@echo " a venv."
 	@echo ""
 ifeq ($(USE_VENV),0)
@@ -187,11 +192,13 @@ endif
 	@echo " ipython                   : Open ipython (in the venv)."
 	@echo ""
 ifeq ($(ON_WINDOWS),0)
+ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 	@echo "Targets for Windows Vagrant Box:"
 	@echo " destroy-windows           : Destroy the vagrant box."
 	@echo " update-windows-box        : Update the vagrant box."
 	@echo " ssh-windows-box           : Enter a running vagrant box via ssh."
 	@echo ""
+endif
 endif
 	@echo "Targets for Style Checking:"
 	@echo " check-style               : Call pylint, pycodestyle, flake8 and mypy."
@@ -240,7 +247,7 @@ ifneq ($(DOC_SUPPORT),)
 	@echo ""
 endif
 	@echo "Targets for Distribution:"
-	@echo " releases                  : Build the releases for Linux and Windows."
+	@echo " releases                  : Build the releases for all platforms."
 ifneq ($(FUNCTEST_DIR),)
 	@echo " test-releases             : Test the releases with the functional test suite."
 endif

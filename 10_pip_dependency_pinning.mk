@@ -96,7 +96,11 @@ PIP_DEPS_UPGRADE_DOCKER_TARGETS := $(addprefix pip-deps-upgrade.ubuntu,$(UBUNTU_
 
 .PHONY: pip-deps-upgrade-all
 
+ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 pip-deps-upgrade-all: $(PIP_DEPS_UPGRADE_DOCKER_TARGETS) pip-deps-upgrade.windows
+else
+pip-deps-upgrade-all: $(PIP_DEPS_UPGRADE_DOCKER_TARGETS)
+endif
 
 else
 

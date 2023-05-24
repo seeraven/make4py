@@ -25,7 +25,11 @@ ifneq ($(FUNCTEST_DIR),)
 ifeq ($(ON_WINDOWS),0)
 
 .PHONY: test-releases
+ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 test-releases: $(UBUNTU_RELEASE_TEST_TARGETS) $(WINDOWS_RELEASE_TEST_TARGETS)
+else
+test-releases: $(UBUNTU_RELEASE_TEST_TARGETS)
+endif
 
 else
 

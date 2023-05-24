@@ -10,6 +10,7 @@
 
 
 ifeq ($(ON_WINDOWS),0)
+ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 
 VAGRANTFILE := $(or $(VAGRANTFILE),$(MAKE4PY_DIR_ABS)/Vagrantfile.win)
 
@@ -33,6 +34,7 @@ update-windows-box: destroy-windows
 ssh-windows-box:
 	@VAGRANT_VAGRANTFILE=$(VAGRANTFILE) vagrant ssh
 
+endif
 endif
 
 

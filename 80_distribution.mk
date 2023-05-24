@@ -41,7 +41,11 @@ endif
 
 ifeq ($(ON_WINDOWS),0)
 
+ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 releases: $(UBUNTU_RELEASE_TARGETS) $(WINDOWS_RELEASE_TARGETS)
+else
+releases: $(UBUNTU_RELEASE_TARGETS)
+endif
 
 else
 
@@ -73,8 +77,10 @@ ifeq ($(ON_WINDOWS),0)
 $(filter-out $(CURRENT_RELEASE_FILE),$(UBUNTU_RELEASE_FILES)): $(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Ubuntu%_x86_64:
 	@make $@.venv.ubuntu$*
 
+ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 $(WINDOWS_RELEASE_FILES):
 	@make $@.venv.windows
+endif
 endif
 
 

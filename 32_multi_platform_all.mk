@@ -15,7 +15,9 @@ ifeq ($(ON_WINDOWS),0)
 	@make $(foreach UBUNTU_VERSION,$(UBUNTU_DIST_VERSIONS), \
 	  $*.ubuntu$(UBUNTU_VERSION) \
 	)
+ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 	@make $*.windows
+endif
 
 endif
 
