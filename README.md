@@ -52,28 +52,29 @@ You can overwrite the defaults of make4py by set the corresponding variable *bef
 including the `.make4py/make4py.mk` file in your `Makefile`. The following configuration
 variables are supported:
 
-| Makefile Variable      | Default Value                 | Description                                                      |
-|------------------------|-------------------------------|------------------------------------------------------------------|
-| `ALL_TARGET`           | `help`                        | The default target run when no target is specified.              |
-| `BUILD_DIR`            | `build`                       | The subdirectory used for venvs and pyinstaller envs.            |
-| `UBUNTU_DIST_VERSIONS` | `18.04 20.04 22.04`           | List of Ubuntu versions to support.                              |
-| `PYCODESTYLE_CONFIG`   | `.make4py/.pycodestyle`       | The configuration file for [pycodestyle].                        |
-| `SRC_DIRS`             | `src test`                    | A list of directories containing the source files.               |
-| `SOURCES`              | `src/**/*.py test/**/*.py`    | A list of sources to model the dependencies of the target.       |
-| `DOC_MODULES`          | all modules under `src`       | A list of modules to document.                                   |
-| `UNITTEST_DIR`         | `test/unittests`              | The directory of the unit tests.                                 |
-| `FUNCTEST_DIR`         | `test/functional_tests`       | The directory of the functional tests.                           |
-| `RELEASE_DIR`          | `releases`                    | The subdirectory used to store the distributables.               |
-| `PYINSTALLER_ARGS`     | `--clean --onefile`           | Arguments to [pyInstaller].                                      |
-| `USE_VENV`             | `1`                           | If set to `1` a venv is used (highly recommended).               |
-| `PIP_DEPS_DIR`         | `pip_deps`                    | The subdirectory used to store the pip-dependencies.             |
-| `DOCKER_STAMPS_DIR`    | `.dockerstamps`               | The subdirectory used to store the stamps for the docker images. |
-| `MAKE4PY_DOCKER_IMAGE` | `make4py`                     | The name of the generated docker images.                         |
-| `MAKE4PY_DOCKER_PKGS`  |                               | An optional list of additional ubuntu packages to install.       |
-| `VAGRANTFILE`          | `.make4py/Vagrantfile.win`    | Overwrite the Vagrantfile used for the windows environment.      |
-| `CLEAN_FILES`          |                               | An additional list of files to clean by `make clean`.            |
-| `CLEAN_DIRS`           |                               | An additional list of directories to clean by `make clean`.      |
-| `CLEAN_DIRS_RECURSIVE` |                               | An additional list of directory names to clean by `make clean`.  |
+| Makefile Variable        | Default Value                 | Description                                                      |
+|--------------------------|-------------------------------|------------------------------------------------------------------|
+| `ALL_TARGET`             | `help`                        | The default target run when no target is specified.              |
+| `BUILD_DIR`              | `build`                       | The subdirectory used for venvs and pyinstaller envs.            |
+| `UBUNTU_DIST_VERSIONS`   | `18.04 20.04 22.04`           | List of Ubuntu versions to support.                              |
+| `ENABLE_WINDOWS_SUPPORT` | `1`                           | If set to `1` windows is supported.                              |
+| `PYCODESTYLE_CONFIG`     | `.make4py/.pycodestyle`       | The configuration file for [pycodestyle].                        |
+| `SRC_DIRS`               | `src test`                    | A list of directories containing the source files.               |
+| `SOURCES`                | `src/**/*.py test/**/*.py`    | A list of sources to model the dependencies of the target.       |
+| `DOC_MODULES`            | all modules under `src`       | A list of modules to document.                                   |
+| `UNITTEST_DIR`           | `test/unittests`              | The directory of the unit tests.                                 |
+| `FUNCTEST_DIR`           | `test/functional_tests`       | The directory of the functional tests.                           |
+| `RELEASE_DIR`            | `releases`                    | The subdirectory used to store the distributables.               |
+| `PYINSTALLER_ARGS`       | `--clean --onefile`           | Arguments to [pyInstaller].                                      |
+| `USE_VENV`               | `1`                           | If set to `1` a venv is used (highly recommended).               |
+| `PIP_DEPS_DIR`           | `pip_deps`                    | The subdirectory used to store the pip-dependencies.             |
+| `DOCKER_STAMPS_DIR`      | `.dockerstamps`               | The subdirectory used to store the stamps for the docker images. |
+| `MAKE4PY_DOCKER_IMAGE`   | `make4py`                     | The name of the generated docker images.                         |
+| `MAKE4PY_DOCKER_PKGS`    |                               | An optional list of additional ubuntu packages to install.       |
+| `VAGRANTFILE`            | `.make4py/Vagrantfile.win`    | Overwrite the Vagrantfile used for the windows environment.      |
+| `CLEAN_FILES`            |                               | An additional list of files to clean by `make clean`.            |
+| `CLEAN_DIRS`             |                               | An additional list of directories to clean by `make clean`.      |
+| `CLEAN_DIRS_RECURSIVE`   |                               | An additional list of directory names to clean by `make clean`.  |
 
 
 [pyInstaller]: https://pyinstaller.org/en/stable/

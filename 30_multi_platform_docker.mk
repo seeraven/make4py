@@ -51,6 +51,10 @@ $(foreach UBUNTU_VERSION,$(UBUNTU_DIST_VERSIONS), \
   $(eval $(call MULTI_PLATFORM_RULE,$(UBUNTU_VERSION))) \
 )
 
+%.ubuntu:
+	@for UBUNTU in $(UBUNTU_DIST_VERSIONS); do \
+	  $(MAKE) $*.ubuntu$$UBUNTU || exit $?; \
+	done
 endif
 
 

@@ -78,14 +78,18 @@ help:
 	@echo "Makefile for $(APP_NAME) ($(APP_VERSION)):"
 	@echo ""
 	@echo "Target suffixes:"
+ifeq ($(ON_WINDOWS),0)
 	@echo " .ubuntuXX.YY              : Execute the make target in a docker"
 	@echo "                             container running Ubuntu XX.YY. The"
 	@echo "                             supported Ubuntu versions are $(UBUNTU_DIST_VERSIONS)"
+	@echo " .ubuntu                   : Execute the make target on all"
+	@echo "                             supported Ubuntu versions $(UBUNTU_DIST_VERSIONS)."
 ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 	@echo " .windows                  : Execute the make target in a vagrant"
 	@echo "                             box running Windows."
 endif
 	@echo " .all                      : Execute the make target on all platforms."
+endif
 	@echo " .venv                     : Execute the make target in a virtual environment (venv)."
 ifeq ($(USE_VENV),1)
 	@echo "                             Note: Usually you do not need to specify this as this"
@@ -146,14 +150,18 @@ help-all:
 	@echo "Makefile for $(APP_NAME) ($(APP_VERSION)):"
 	@echo ""
 	@echo "Target suffixes:"
+ifeq ($(ON_WINDOWS),0)
 	@echo " .ubuntuXX.YY              : Execute the make target in a docker"
 	@echo "                             container running Ubuntu XX.YY. The"
 	@echo "                             supported Ubuntu versions are $(UBUNTU_DIST_VERSIONS)"
+	@echo " .ubuntu                   : Execute the make target on all"
+	@echo "                             supported Ubuntu versions $(UBUNTU_DIST_VERSIONS)."
 ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 	@echo " .windows                  : Execute the make target in a vagrant"
 	@echo "                             box running Windows."
 endif
 	@echo " .all                      : Execute the make target on all platforms."
+endif
 	@echo " .venv                     : Execute the make target in a virtual environment (venv)."
 ifeq ($(USE_VENV),1)
 	@echo "                             Note: Usually you do not need to specify this as this"
