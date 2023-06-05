@@ -72,7 +72,7 @@ include $(MAKE4PY_DIR)81_release_tests.mk
 # ----------------------------------------------------------------------------
 #  USAGE
 # ----------------------------------------------------------------------------
-.PHONY: help help-all
+.PHONY: help help-all show-env
 
 help:
 	@echo "Makefile for $(APP_NAME) ($(APP_VERSION)):"
@@ -273,6 +273,25 @@ endif
 	@echo " CURDIR             = $(CURDIR)"
 	@echo " MAKE4PY_DIR        = $(MAKE4PY_DIR)"
 	@echo " MAKE4PY_DIR_ABS    = $(MAKE4PY_DIR_ABS)"
+
+
+show-env:
+	@echo "Environment:"
+	@echo " PWD                = $(PWD)"
+	@echo " CURDIR             = $(CURDIR)"
+	@echo " MAKE4PY_DIR        = $(MAKE4PY_DIR)"
+	@echo " MAKE4PY_DIR_ABS    = $(MAKE4PY_DIR_ABS)"
+	@echo " ON_WINDOWS         = $(ON_WINDOWS)"
+	@echo " IN_VENV            = $(IN_VENV)"
+	@echo " VENV_DIR           = $(VENV_DIR)"
+	@echo " VENV_ACTIVATE      = $(VENV_ACTIVATE)"
+	@echo " VENV_SHELL         = $(VENV_SHELL)"
+	@echo " INTERACTIVE_SHELL  = $(INTERACTIVE_SHELL)"
+	@echo " SWITCH_TO_VENV     = $(SWITCH_TO_VENV)"
+	@echo " SHELL              = $(SHELL)"
+	@echo " PYTHON             = $(PYTHON)"
+	@echo " SET_PYTHONPATH     = $(SET_PYTHONPATH)"
+	@echo " IN_DOCKER          = $(IN_DOCKER)"
 
 
 # ----------------------------------------------------------------------------
