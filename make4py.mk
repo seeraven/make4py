@@ -204,6 +204,7 @@ ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 	@echo "Targets for Windows Vagrant Box:"
 	@echo " destroy-windows           : Destroy the vagrant box."
 	@echo " update-windows-box        : Update the vagrant box."
+	@echo " start-windows-box         : Start the vagrant box."
 	@echo " ssh-windows-box           : Enter a running vagrant box via ssh."
 	@echo ""
 endif

@@ -14,7 +14,7 @@ ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 
 VAGRANTFILE := $(or $(VAGRANTFILE),$(MAKE4PY_DIR_ABS)/Vagrantfile.win)
 
-.PHONY: destroy-windows update-windows-box ssh-windows-box
+.PHONY: destroy-windows update-windows-box start-windows-box ssh-windows-box
 
 %.windows:
 	@echo "Entering windows environment..."
@@ -30,6 +30,9 @@ destroy-windows:
 update-windows-box: destroy-windows
 	@VAGRANT_VAGRANTFILE=$(VAGRANTFILE) vagrant box update
 	@VAGRANT_VAGRANTFILE=$(VAGRANTFILE) vagrant box prune --force --keep-active-boxes
+
+start-windows-box:
+	@VAGRANT_VAGRANTFILE=$(VAGRANTFILE) vagrant up
 
 ssh-windows-box:
 	@VAGRANT_VAGRANTFILE=$(VAGRANTFILE) vagrant ssh
