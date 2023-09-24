@@ -10,15 +10,19 @@
 
 
 ifeq ($(ON_WINDOWS),0)
-UBUNTU_DOCKER_IMAGES  := $(addprefix dockerimage_ubuntu,$(UBUNTU_DIST_VERSIONS))
-DOCKER_STAMPS_DIR     := $(or $(DOCKER_STAMPS_DIR),$(CURDIR)/.dockerstamps)
-MAKE4PY_DOCKER_IMAGE  := $(or $(MAKE4PY_DOCKER_IMAGE),make4py)
-MAKE4PY_DOCKER_PKGS   := $(or $(MAKE4PY_DOCKER_PKGS),)
-MAKE4PY_DOCKER_IMAGES := $(addprefix $(MAKE4PY_DOCKER_IMAGE):ubuntu,$(UBUNTU_DIST_VERSIONS))
+UBUNTU_DOCKER_IMAGES         := $(addprefix dockerimage_ubuntu,$(UBUNTU_DIST_VERSIONS))
+DOCKER_STAMPS_DIR            := $(or $(DOCKER_STAMPS_DIR),$(CURDIR)/.dockerstamps)
+MAKE4PY_DOCKER_IMAGE         := $(or $(MAKE4PY_DOCKER_IMAGE),make4py)
+MAKE4PY_DOCKER_PKGS          := $(or $(MAKE4PY_DOCKER_PKGS),)
+MAKE4PY_DOCKER_SETUP_SCRIPTS := $(or $(MAKE4PY_DOCKER_SETUP_SCRIPTS),)
+MAKE4PY_DOCKER_IMAGES        := $(addprefix $(MAKE4PY_DOCKER_IMAGE):ubuntu,$(UBUNTU_DIST_VERSIONS))
 
 .PHONY: $(UBUNTU_DOCKER_IMAGES) clean-dockerimages
 
-$(DOCKER_STAMPS_DIR)/$(MAKE4PY_DOCKER_IMAGE)\:ubuntu%: $(MAKE4PY_DIR_ABS)/.dockerfiles/Dockerfile.ubuntu
+$(DOCKER_STAMPS_DIR)/$(MAKE4PY_DOCKER_IMAGE)\:ubuntu%: $(MAKE4PY_DIR_ABS)/.dockerfiles/Dockerfile.ubuntu $(MAKE4PY_DOCKER_SETUP_SCRIPTS)
+ifneq ($(MAKE4PY_DOCKER_SETUP_SCRIPTS),)
+	@cp -a $(MAKE4PY_DOCKER_SETUP_SCRIPTS) $(MAKE4PY_DIR_ABS)/.dockerfiles/
+endif
 	@docker build --build-arg UBUNTU_VERSION=$* \
 	              --build-arg TGT_UID=$(shell id -u) \
 	              --build-arg TGT_GID=$(shell id -g) \

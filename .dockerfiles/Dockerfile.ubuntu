@@ -12,25 +12,36 @@
 ARG UBUNTU_VERSION
 FROM ubuntu:$UBUNTU_VERSION
 
-RUN echo -e 'tzdata tzdata/Areas select Europe\n\
-tzdata tzdata/Zones/Europe select Berlin\n' > /tmp/tzdata_preseed
-RUN debconf-set-selections /tmp/tzdata_preseed && rm -f /tmp/tzdata_preseed
-
+# System update
 RUN DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     apt-get update
 RUN DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     apt-get -y dist-upgrade
 
+RUN echo -e 'tzdata tzdata/Areas select Europe\n\
+tzdata tzdata/Zones/Europe select Berlin\n' > /tmp/tzdata_preseed
+RUN debconf-set-selections /tmp/tzdata_preseed && rm -f /tmp/tzdata_preseed
+RUN DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
+    apt-get -y install tzdata
+
+# Makefile support and other system related stuff
 ARG ADDITIONAL_PACKAGES=
 
 RUN DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     apt-get -y install lsb-release make binutils $ADDITIONAL_PACKAGES
 
+# Use bash instead of dash
 RUN ln -sf bash /bin/sh
 
+# Custom setup scripts
+COPY custom_setup_*.sh /tmp
+RUN ["/bin/bash", "-c", "shopt -s nullglob; for SCRIPT in /tmp/custom_setup_*.sh; do $SCRIPT; done"]
+
+# Install python
 COPY ubuntu_install_python.sh /tmp/ubuntu_install_python.sh
 RUN /tmp/ubuntu_install_python.sh && rm -f /tmp/ubuntu_install_python.sh
 
+# Create dockeruser user
 ARG TGT_GID
 ARG TGT_UID
 
