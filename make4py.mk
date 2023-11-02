@@ -54,6 +54,7 @@ all: $(ALL_TARGET)
 #  SECOND INCLUDE BLOCK
 # ----------------------------------------------------------------------------
 include $(MAKE4PY_DIR)03_ensure_python_version.mk
+include $(MAKE4PY_DIR)04_validate_pyproject.mk
 include $(MAKE4PY_DIR)10_pip_dependency_pinning.mk
 include $(MAKE4PY_DIR)20_system_setup.mk
 include $(MAKE4PY_DIR)21_venv_support.mk
@@ -180,6 +181,9 @@ ifeq ($(USE_VENV),0)
 	@echo " the '.venv' suffix!"
 	@echo ""
 endif
+	@echo "Targets for Validation:"
+	@echo " validate-pyproject-toml   : Validate the pyproject.toml file."
+	@echo ""
 	@echo "Targets for PIP Dependency Pinning:"
 	@echo " pip-deps-upgrade          : Update the pip-dependencies extracted"
 	@echo "                             from the pyproject.toml for the current"
