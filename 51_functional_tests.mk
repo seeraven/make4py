@@ -11,23 +11,40 @@
 
 ifneq ($(FUNCTEST_DIR),)
 
-.PHONY: functional-tests functional-tests-coverage
+.PHONY: functional-tests functional-tests-list functional-tests-coverage
+
+ifneq ($(FUNCTESTS),)
+FUNCTEST_SELECTION := -k "$(FUNCTESTS)"
+endif
 
 ifeq ($(SWITCH_TO_VENV),1)
 
 functional-tests: functional-tests.venv
+functional-tests-list: functional-tests-list.venv
 functional-tests-coverage: functional-tests-coverage.venv
 
 else
 
+ifeq ($(ON_WINDOWS),1)
+
 functional-tests: $(SOURCES)
-	@pytest $(FUNCTEST_DIR)
+	@pytest --executable "python $(SCRIPT)" $(FUNCTEST_SELECTION) $(FUNCTEST_DIR)
+
+else
+
+functional-tests: $(SOURCES)
+	@pytest $(FUNCTEST_SELECTION) $(FUNCTEST_DIR)
+
+endif
+
+functional-tests-list: $(SOURCES)
+	@pytest --collect-only $(FUNCTEST_DIR)
 
 functional-tests-coverage: $(SOURCES)
 	@$(call RMFILE,.coverage.functests)
 	@$(call RMDIR,doc/functional-tests-coverage)
 	@COVERAGE_FILE=.coverage.functests \
-	pytest --cov --cov-report=term --cov-report=html:doc/functional-tests-coverage $(FUNCTEST_DIR)
+	pytest --cov --cov-report=term --cov-report=html:doc/functional-tests-coverage $(FUNCTEST_SELECTION) $(FUNCTEST_DIR)
 
 endif
 

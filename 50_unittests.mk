@@ -11,24 +11,31 @@
 
 ifneq ($(UNITTEST_DIR),)
 
-.PHONY: unittests unittests-coverage
+.PHONY: unittests unittests-list unittests-coverage
 
+ifneq ($(UNITTESTS),)
+UNITTEST_SELECTION := -k "$(UNITTESTS)"
+endif
 
 ifeq ($(SWITCH_TO_VENV),1)
 
 unittests: unittests.venv
+unittests-list: unittests-list.venv
 unittests-coverage: unittests-coverage.venv
 
 else
 
 unittests: $(SOURCES)
-	@pytest $(UNITTEST_DIR)
+	@pytest $(UNITTEST_SELECTION) $(UNITTEST_DIR)
+
+unittests-list: $(SOURCES)
+	@pytest --collect-only $(UNITTEST_DIR)
 
 unittests-coverage: $(SOURCES)
 	@$(call RMFILE,.coverage.unittests)
 	@$(call RMDIR,doc/unittests-coverage)
 	@COVERAGE_FILE=.coverage.unittests \
-	pytest --cov --cov-report=term --cov-report=html:doc/unittests-coverage $(UNITTEST_DIR)
+	pytest --cov --cov-report=term --cov-report=html:doc/unittests-coverage $(UNITTEST_SELECTION) $(UNITTEST_DIR)
 
 endif
 
