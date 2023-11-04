@@ -13,13 +13,15 @@ ifeq ($(ON_WINDOWS),0)
 ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 
 VAGRANTFILE := $(or $(VAGRANTFILE),$(MAKE4PY_DIR_ABS)/Vagrantfile.win)
+VARS_TO_PROPAGATE := UNITTESTS FUNCTESTS
+PROPAGATE_CMD := $(foreach VAR_NAME,$(VARS_TO_PROPAGATE),set $(VAR_NAME)="$($(VAR_NAME))" \&)
 
 .PHONY: destroy-windows update-windows-box start-windows-box ssh-windows-box
 
 %.windows:
 	@echo "Entering windows environment..."
 	@VAGRANT_VAGRANTFILE=$(VAGRANTFILE) vagrant up
-	@VAGRANT_VAGRANTFILE=$(VAGRANTFILE) vagrant ssh -- make -C C:\\vagrant $*
+	@VAGRANT_VAGRANTFILE=$(VAGRANTFILE) vagrant ssh -- $(PROPAGATE_CMD) make -C C:\\vagrant $*
 	@VAGRANT_VAGRANTFILE=$(VAGRANTFILE) vagrant halt
 	@echo "Leaving windows environment."
 

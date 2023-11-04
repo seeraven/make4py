@@ -28,7 +28,7 @@ else
 ifeq ($(ON_WINDOWS),1)
 
 functional-tests: $(SOURCES)
-	@pytest --executable "python $(SCRIPT)" $(FUNCTEST_SELECTION) $(FUNCTEST_DIR)
+	@pytest $(FUNCTEST_SELECTION) --executable "python $(SCRIPT)" $(FUNCTEST_DIR)
 
 else
 
