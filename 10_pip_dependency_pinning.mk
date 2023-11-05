@@ -53,7 +53,7 @@ $(PIP_REQUIREMENTS): pyproject.toml
 	@$(PIP_DEPS_VENV_ACTIVATE_PLUS) pip-compile pyproject.toml \
 	    --resolver=backtracking \
 	    --output-file=$(PIP_REQUIREMENTS) \
-	    --no-emit-trusted-host --no-emit-index-url --no-header --quiet
+	    --no-emit-trusted-host --no-emit-index-url --no-header --no-strip-extras --quiet
 	@$(call RMDIR,$(PIP_DEPS_VENV_DIR))
 
 $(PIP_DEV_REQUIREMENTS): pyproject.toml
@@ -67,7 +67,7 @@ $(PIP_DEV_REQUIREMENTS): pyproject.toml
 	    --extra dev \
 	    --extra test \
 	    --output-file=$(PIP_DEV_REQUIREMENTS) \
-	    --no-emit-trusted-host --no-emit-index-url --no-header --quiet
+	    --no-emit-trusted-host --no-emit-index-url --no-header --no-strip-extras --quiet
 	@$(call RMDIR,$(PIP_DEPS_VENV_DIR))
 
 .PHONY: pip-deps-upgrade
@@ -81,13 +81,13 @@ pip-deps-upgrade:
 	@$(PIP_DEPS_VENV_ACTIVATE_PLUS) pip-compile pyproject.toml \
 	    --resolver=backtracking \
 	    --output-file=$(PIP_REQUIREMENTS) \
-	    --no-emit-trusted-host --no-emit-index-url --no-header --quiet --upgrade
+	    --no-emit-trusted-host --no-emit-index-url --no-header --no-strip-extras --quiet --upgrade
 	@$(PIP_DEPS_VENV_ACTIVATE_PLUS) pip-compile pyproject.toml \
 	    --resolver=backtracking \
 	    --extra dev \
 	    --extra test \
 	    --output-file=$(PIP_DEV_REQUIREMENTS) \
-	    --no-emit-trusted-host --no-emit-index-url --no-header --quiet --upgrade
+	    --no-emit-trusted-host --no-emit-index-url --no-header --no-strip-extras --quiet --upgrade
 	@$(call RMDIR,$(PIP_DEPS_VENV_DIR))
 
 ifeq ($(ON_WINDOWS),0)
