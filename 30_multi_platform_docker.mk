@@ -16,6 +16,7 @@ MAKE4PY_DOCKER_IMAGE         := $(or $(MAKE4PY_DOCKER_IMAGE),make4py)
 MAKE4PY_DOCKER_PKGS          := $(or $(MAKE4PY_DOCKER_PKGS),)
 MAKE4PY_DOCKER_SETUP_SCRIPTS := $(or $(MAKE4PY_DOCKER_SETUP_SCRIPTS),)
 MAKE4PY_DOCKER_IMAGES        := $(addprefix $(MAKE4PY_DOCKER_IMAGE):ubuntu,$(UBUNTU_DIST_VERSIONS))
+PROPAGATE_ARGS               := $(foreach VAR_NAME,$(VARS_TO_PROPAGATE),-e $(VAR_NAME)="$($(VAR_NAME))" )
 
 .PHONY: $(UBUNTU_DOCKER_IMAGES) clean-dockerimages
 
@@ -46,6 +47,7 @@ define MULTI_PLATFORM_RULE =
 	@echo "Entering docker environment $(MAKE4PY_DOCKER_IMAGE):ubuntu$(1)..."
 	@docker run --rm --user dockeruser \
 	            -v $(CURDIR):/workdir \
+                    $(PROPAGATE_ARGS) \
 	            $(MAKE4PY_DOCKER_IMAGE):ubuntu$(1) \
 	            make -C /workdir $$*
 	@echo "Leaving docker environment $(MAKE4PY_DOCKER_IMAGE):ubuntu$(1)."

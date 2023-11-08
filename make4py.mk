@@ -40,6 +40,7 @@ PYINSTALLER_ARGS       := $(or $(PYINSTALLER_ARGS),--clean --onefile)
 CLEAN_FILES            := $(or $(CLEAN_FILES),)
 CLEAN_DIRS             := $(or $(CLEAN_DIRS),)
 CLEAN_DIRS_RECURSIVE   := $(or $(CLEAN_DIRS_RECURSIVE),)
+VARS_TO_PROPAGATE      := $(or $(VARS_TO_PROPAGATE),UNITTESTS FUNCTESTS)
 
 
 # ----------------------------------------------------------------------------
