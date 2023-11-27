@@ -34,7 +34,7 @@ RUN DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
 RUN ln -sf bash /bin/sh
 
 # Custom setup scripts
-COPY custom_setup_*.sh /tmp
+COPY custom_setup_*.sh /tmp/
 RUN ["/bin/bash", "-c", "shopt -s nullglob; for SCRIPT in /tmp/custom_setup_*.sh; do $SCRIPT; done"]
 
 # Install python
