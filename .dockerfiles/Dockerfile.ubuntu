@@ -45,7 +45,9 @@ RUN /tmp/ubuntu_install_python.sh && rm -f /tmp/ubuntu_install_python.sh
 ARG TGT_GID
 ARG TGT_UID
 
-RUN groupadd --gid $TGT_GID dockeruser
+RUN getent group $TGT_GID && groupmod -n dockeruser $(getent group $TGT_GID | cut -d: -f1) || true
+RUN getent group $TGT_GID || groupadd --gid $TGT_GID dockeruser
+RUN id -u -n $TGT_UID     && userdel -r -f $(id -u -n $TGT_UID) || true
 RUN useradd --gid $TGT_GID --uid $TGT_UID --shell /bin/bash --create-home dockeruser
 
 # To distinguish between running in a docker and running on the host:
