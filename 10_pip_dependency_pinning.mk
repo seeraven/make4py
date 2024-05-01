@@ -32,7 +32,7 @@ endif
 #  TARGETS
 # ----------------------------------------------------------------------------
 
-define create-pip-deps-venv =
+define create-pip-deps-venv
 $(call RMDIR,$(PIP_DEPS_VENV_DIR))
 echo "-------------------------------------------------------------"
 echo "Create $(PIP_DEPS_VENV_DIR)"

@@ -42,7 +42,7 @@ clean-dockerimages:
 	@docker rmi $(MAKE4PY_DOCKER_IMAGES) || true
 	@docker system prune -f              || true
 
-define MULTI_PLATFORM_RULE =
+define MULTI_PLATFORM_RULE
 %.ubuntu$(1): dockerimage_ubuntu$(1)
 	@echo "Entering docker environment $(MAKE4PY_DOCKER_IMAGE):ubuntu$(1)..."
 	@docker run --rm --user dockeruser \
