@@ -60,7 +60,7 @@ else
     SHELL  = /bin/bash
     PYTHON := python3
     ifeq (, $(shell which lsb_release))
-        LINUX_PLATFORM_STRING := unknown_$(shell uname -m)
+        LINUX_PLATFORM_STRING := $(shell uname -s)_$(shell uname -m)
     else
         LINUX_PLATFORM_STRING := $(shell lsb_release -i -s)$(shell lsb_release -r -s)_$(shell uname -m)
     endif
