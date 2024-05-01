@@ -22,9 +22,10 @@ WINDOWS_RELEASE_TEST_TARGETS := $(WINDOWS_RELEASE_FILES).release_test.venv.windo
 
 ifneq ($(FUNCTEST_DIR),)
 
+.PHONY: test-current-release test-releases
+
 ifeq ($(ON_WINDOWS),0)
 
-.PHONY: test-releases
 ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 test-releases: $(UBUNTU_RELEASE_TEST_TARGETS) $(WINDOWS_RELEASE_TEST_TARGETS)
 else
@@ -33,11 +34,11 @@ endif
 
 else
 
-.PHONY: test-releases
 test-releases: $(WINDOWS_RELEASE_FILES).release_test.venv
 
 endif
 
+test-current-release: $(CURRENT_RELEASE_FILE).release_test.venv
 
 %.release_test: %
 	@echo "Testing release $*..."

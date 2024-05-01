@@ -145,6 +145,7 @@ ifneq ($(DOC_SUPPORT),)
 	@echo " doc                       : Generate the documentation."
 	@echo " man                       : Generate the man page."
 endif
+	@echo " current-release           : Build the release for this platform."
 	@echo " releases                  : Build the releases for all platforms."
 	@echo " clean                     : Remove all temporary files."
 	@echo " distclean                 : Like above but also remove releases and all venvs."
@@ -273,8 +274,10 @@ ifneq ($(DOC_SUPPORT),)
 	@echo ""
 endif
 	@echo "Targets for Distribution:"
+	@echo " current-release           : Build the release for this platform."
 	@echo " releases                  : Build the releases for all platforms."
 ifneq ($(FUNCTEST_DIR),)
+	@echo " test-current-release      : Test the release for this platform with the functional test suite."
 	@echo " test-releases             : Test the releases with the functional test suite."
 endif
 	@echo ""

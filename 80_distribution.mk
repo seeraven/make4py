@@ -37,7 +37,7 @@ endif
 # ----------------------------------------------------------------------------
 #  TARGETS
 # ----------------------------------------------------------------------------
-.PHONY: releases
+.PHONY: current-release releases
 
 ifeq ($(ON_WINDOWS),0)
 
@@ -57,6 +57,7 @@ endif
 
 endif
 
+current-release: $(CURRENT_RELEASE_FILE)
 
 ifeq ($(SWITCH_TO_VENV),1)
 
