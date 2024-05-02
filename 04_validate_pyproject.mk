@@ -27,7 +27,7 @@ endif
 #  TARGETS
 # ----------------------------------------------------------------------------
 
-define create-validate-pyproject-venv =
+define create-validate-pyproject-venv
 $(call RMDIR,$(VALIDATE_PYPROJECT_VENV_DIR))
 echo "-------------------------------------------------------------"
 echo "Create $(VALIDATE_PYPROJECT_VENV_DIR)"

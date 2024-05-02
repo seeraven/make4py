@@ -13,7 +13,7 @@ ifneq ($(UNITTEST_DIR),)
 
 .PHONY: unittests unittests-list unittests-coverage
 
-ifneq ($(UNITTESTS),)
+ifneq ($(strip $(UNITTESTS)),)
 UNITTEST_SELECTION := -k "$(UNITTESTS)"
 endif
 

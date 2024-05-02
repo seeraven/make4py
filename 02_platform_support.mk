@@ -46,6 +46,7 @@ rwildcard = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(
 ifeq ($(ON_WINDOWS),1)
     PWD    := $(CURDIR)
     PYTHON := python
+    SHELL  := cmd
     WIN_PLATFORM_STRING := $(shell python -c "import platform;print(f'win{platform.release()}_{platform.architecture()[0]}',end='')")
     SET_PYTHONPATH := set PYTHONPATH=$(PYTHONPATH) &
     FIX_PATH = $(subst /,\\,$1)
@@ -60,7 +61,7 @@ else
     SHELL  = /bin/bash
     PYTHON := python3
     ifeq (, $(shell which lsb_release))
-        LINUX_PLATFORM_STRING := unknown_$(shell uname -m)
+        LINUX_PLATFORM_STRING := $(shell uname -s)_$(shell uname -m)
     else
         LINUX_PLATFORM_STRING := $(shell lsb_release -i -s)$(shell lsb_release -r -s)_$(shell uname -m)
     endif
