@@ -13,7 +13,7 @@ ifneq ($(FUNCTEST_DIR),)
 
 .PHONY: functional-tests functional-tests-list functional-tests-coverage
 
-ifneq ($(FUNCTESTS),)
+ifneq ($(strip $(FUNCTESTS)),)
 FUNCTEST_SELECTION := -k "$(FUNCTESTS)"
 endif
 
