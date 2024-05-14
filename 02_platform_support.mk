@@ -48,6 +48,7 @@ ifeq ($(ON_WINDOWS),1)
     PYTHON := python
     SHELL  := cmd
     WIN_PLATFORM_STRING := $(shell python -c "import platform;print(f'win{platform.release()}_{platform.architecture()[0]}',end='')")
+    SHORT_PLATFORM := WINDOWS
     SET_PYTHONPATH := set PYTHONPATH=$(PYTHONPATH) &
     FIX_PATH = $(subst /,\\,$1)
     RMDIR    = rmdir /S /Q $(call FIX_PATH,$1) 2>nul || ver >nul
@@ -57,6 +58,8 @@ ifeq ($(ON_WINDOWS),1)
     MKDIR    = mkdir $(call FIX_PATH,$1) || ver >nul
     COPY     = copy $(call FIX_PATH,$1) $(call FIX_PATH,$2)
     MOVE     = move $(call FIX_PATH,$1) $(call FIX_PATH,$2)
+    # $(call ZIP,<BASEDIR>,<SUBDIR>,<OUTFILE W/O SUFFIX>)
+    ZIP      = cd $(call FIX_PATH,$1) & tar -a -c -f $(call FIX_PATH,$3).zip $(call FIX_PATH,$2)
 else
     SHELL  = /bin/bash
     PYTHON := python3
@@ -65,6 +68,7 @@ else
     else
         LINUX_PLATFORM_STRING := $(shell lsb_release -i -s)$(shell lsb_release -r -s)_$(shell uname -m)
     endif
+    SHORT_PLATFORM := $(shell uname -s | tr '[:lower:]' '[:upper:]')
     SET_PYTHONPATH := PYTHONPATH=$(PYTHONPATH)
     RMDIR    = rm -rf $1
     RMDIRR   = find . -name "$1" -exec rm -rf {} \; 2>/dev/null || true
@@ -73,6 +77,7 @@ else
     MKDIR    = mkdir -p $1
     COPY     = cp -a $1 $2
     MOVE     = mv $1 $2
+    ZIP      = cd $1 && tar cfz $3.tgz $2
 endif
 
 ifeq ($(IN_DOCKER),1)

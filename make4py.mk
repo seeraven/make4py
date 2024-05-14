@@ -23,24 +23,28 @@ include $(MAKE4PY_DIR)02_platform_support.mk
 # ----------------------------------------------------------------------------
 #  DEFAULT SETTINGS
 # ----------------------------------------------------------------------------
-ALL_TARGET             := $(or $(ALL_TARGET),help)
-BUILD_DIR              := $(or $(BUILD_DIR),build)
-UBUNTU_DIST_VERSIONS   := $(or $(UBUNTU_DIST_VERSIONS),18.04 20.04 22.04)
-ENABLE_WINDOWS_SUPPORT := $(or $(ENABLE_WINDOWS_SUPPORT),1)
-PYCODESTYLE_CONFIG     := $(or $(PYCODESTYLE_CONFIG),$(MAKE4PY_DIR)/.pycodestyle)
-SRC_DIRS               := $(or $(SRC_DIRS),$(wildcard src/. test/.))
-SOURCES                := $(or $(SOURCES),$(SCRIPT) $(call rwildcard,$(SRC_DIRS),*.py))
-DOC_SUPPORT            := $(wildcard doc/*/conf.py)
-DOC_MODULES            := $(or $(DOC_MODULES),$(dir $(wildcard src/*/__init__.py)))
-UNITTEST_DIR           := $(or $(UNITTEST_DIR),$(wildcard test/unittests/.))
-FUNCTEST_DIR           := $(or $(FUNCTEST_DIR),$(wildcard test/functional_tests/.))
-TEST_SUPPORT           := $(or $(UNITTEST_DIR),$(FUNCTEST_DIR))
-RELEASE_DIR            := $(or $(RELEASE_DIR),releases)
-PYINSTALLER_ARGS       := $(or $(PYINSTALLER_ARGS),--clean --onefile)
-CLEAN_FILES            := $(or $(CLEAN_FILES),)
-CLEAN_DIRS             := $(or $(CLEAN_DIRS),)
-CLEAN_DIRS_RECURSIVE   := $(or $(CLEAN_DIRS_RECURSIVE),)
-VARS_TO_PROPAGATE      := $(or $(VARS_TO_PROPAGATE),UNITTESTS FUNCTESTS)
+ALL_TARGET               := $(or $(ALL_TARGET),help)
+BUILD_DIR                := $(or $(BUILD_DIR),build)
+UBUNTU_DIST_VERSIONS     := $(or $(UBUNTU_DIST_VERSIONS),18.04 20.04 22.04)
+ENABLE_WINDOWS_SUPPORT   := $(or $(ENABLE_WINDOWS_SUPPORT),1)
+PYCODESTYLE_CONFIG       := $(or $(PYCODESTYLE_CONFIG),$(MAKE4PY_DIR)/.pycodestyle)
+SRC_DIRS                 := $(or $(SRC_DIRS),$(wildcard src/. test/.))
+SOURCES                  := $(or $(SOURCES),$(SCRIPT) $(call rwildcard,$(SRC_DIRS),*.py))
+DOC_SUPPORT              := $(wildcard doc/*/conf.py)
+DOC_MODULES              := $(or $(DOC_MODULES),$(dir $(wildcard src/*/__init__.py)))
+UNITTEST_DIR             := $(or $(UNITTEST_DIR),$(wildcard test/unittests/.))
+FUNCTEST_DIR             := $(or $(FUNCTEST_DIR),$(wildcard test/functional_tests/.))
+TEST_SUPPORT             := $(or $(UNITTEST_DIR),$(FUNCTEST_DIR))
+RELEASE_DIR              := $(or $(RELEASE_DIR),releases)
+PYINSTALLER_ARGS_VAR     := PYINSTALLER_ARGS_$(SHORT_PLATFORM)
+PYINSTALLER_ARGS         := $(or $($(PYINSTALLER_ARGS_VAR)),$(or $(PYINSTALLER_ARGS),--clean --onefile))
+PYINSTALLER_ARGS_WINDOWS := $(or $(PYINSTALLER_ARGS_WINDOWS),$(PYINSTALLER_ARGS))
+PYINSTALLER_ARGS_LINUX   := $(or $(PYINSTALLER_ARGS_LINUX),$(PYINSTALLER_ARGS))
+PYINSTALLER_ARGS_DARWIN  := $(or $(PYINSTALLER_ARGS_DARWIN),$(PYINSTALLER_ARGS))
+CLEAN_FILES              := $(or $(CLEAN_FILES),)
+CLEAN_DIRS               := $(or $(CLEAN_DIRS),)
+CLEAN_DIRS_RECURSIVE     := $(or $(CLEAN_DIRS_RECURSIVE),)
+VARS_TO_PROPAGATE        := $(or $(VARS_TO_PROPAGATE),UNITTESTS FUNCTESTS)
 
 
 # ----------------------------------------------------------------------------
@@ -301,6 +305,7 @@ show-env:
 	@echo " CURDIR             = $(CURDIR)"
 	@echo " MAKE4PY_DIR        = $(MAKE4PY_DIR)"
 	@echo " MAKE4PY_DIR_ABS    = $(MAKE4PY_DIR_ABS)"
+	@echo " SHORT_PLATFORM     = $(SHORT_PLATFORM)"
 	@echo " ON_WINDOWS         = $(ON_WINDOWS)"
 	@echo " IN_VENV            = $(IN_VENV)"
 	@echo " VENV_DIR           = $(VENV_DIR)"
@@ -312,6 +317,7 @@ show-env:
 	@echo " PYTHON             = $(PYTHON)"
 	@echo " SET_PYTHONPATH     = $(SET_PYTHONPATH)"
 	@echo " IN_DOCKER          = $(IN_DOCKER)"
+	@echo " PYINSTALLER_ARGS   = $(PYINSTALLER_ARGS)"
 
 
 # ----------------------------------------------------------------------------

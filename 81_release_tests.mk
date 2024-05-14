@@ -42,7 +42,15 @@ test-current-release: $(CURRENT_RELEASE_FILE).release_test.venv
 
 %.release_test: %
 	@echo "Testing release $*..."
-	@pytest --executable $* $(FUNCTEST_DIR)
+ifneq (,$(findstring --onefile,$(PYINSTALLER_ARGS)))
+	@pytest $(FUNCTEST_SELECTION) --executable $* $(FUNCTEST_DIR)
+else
+  ifeq ($(ON_WINDOWS),1)
+	pytest $(FUNCTEST_SELECTION) --executable $*/$(APP_NAME).exe $(FUNCTEST_DIR)
+  else
+	pytest $(FUNCTEST_SELECTION) --executable $*/$(APP_NAME) $(FUNCTEST_DIR)
+  endif
+endif
 	@echo "Release $* tested successfully."
 
 endif

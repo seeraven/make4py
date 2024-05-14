@@ -13,7 +13,11 @@
 #  SETTINGS
 # ----------------------------------------------------------------------------
 UBUNTU_RELEASE_FILES    := $(foreach ver,$(UBUNTU_DIST_VERSIONS),$(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Ubuntu$(ver)_x86_64)
-WINDOWS_RELEASE_FILES   := $(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_win10_64bit.exe
+ifneq (,$(findstring --onefile,$(PYINSTALLER_ARGS_WINDOWS)))
+  WINDOWS_RELEASE_FILES   := $(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_win10_64bit.exe
+else
+  WINDOWS_RELEASE_FILES   := $(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_win10_64bit
+endif
 
 ifeq ($(USE_VENV),1)
   UBUNTU_RELEASE_TARGETS  := $(foreach ver,$(UBUNTU_DIST_VERSIONS),$(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Ubuntu$(ver)_x86_64.venv.ubuntu$(ver))
@@ -24,7 +28,11 @@ else
 endif
 
 ifeq ($(ON_WINDOWS),1)
-  DIST_FILE            := dist/$(APP_NAME).exe
+  ifneq (,$(findstring --onefile,$(PYINSTALLER_ARGS)))
+    DIST_FILE            := dist/$(APP_NAME).exe
+  else
+    DIST_FILE            := dist/$(APP_NAME)
+  endif
   CURRENT_RELEASE_FILE := $(WINDOWS_RELEASE_FILES)
   PYINSTALLER_WORK_DIR := $(BUILD_DIR)\pyinstaller_$(WIN_PLATFORM_STRING)$(PLATFORM_SUFFIX)
 else
@@ -67,10 +75,17 @@ $(CURRENT_RELEASE_FILE):
 else
 
 $(CURRENT_RELEASE_FILE): $(SOURCES)
+ifneq (,$(findstring --onefile,$(PYINSTALLER_ARGS)))
 	@$(call RMFILE,$(DIST_FILE))
+else
+	@$(call RMDIRR,$(DIST_FILE))
+endif
 	@pyinstaller $(PYINSTALLER_ARGS) --workpath $(PYINSTALLER_WORK_DIR) --name $(APP_NAME) $(SCRIPT)
 	@$(call MKDIR,releases)
 	@$(call MOVE,$(DIST_FILE) $(CURRENT_RELEASE_FILE))
+ifeq (,$(findstring --onefile,$(PYINSTALLER_ARGS)))
+	@$(call ZIP,releases,$(notdir $(CURRENT_RELEASE_FILE)),$(notdir $(CURRENT_RELEASE_FILE)))
+endif
 
 endif
 
