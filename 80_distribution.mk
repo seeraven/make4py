@@ -13,6 +13,7 @@
 #  SETTINGS
 # ----------------------------------------------------------------------------
 UBUNTU_RELEASE_FILES    := $(foreach ver,$(UBUNTU_DIST_VERSIONS),$(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Ubuntu$(ver)_x86_64)
+ALPINE_RELEASE_FILES    := $(foreach ver,$(ALPINE_DIST_VERSIONS),$(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Alpine$(ver)_x86_64)
 ifneq (,$(findstring --onefile,$(PYINSTALLER_ARGS_WINDOWS)))
   WINDOWS_RELEASE_FILES   := $(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_win10_64bit.exe
 else
@@ -21,9 +22,11 @@ endif
 
 ifeq ($(USE_VENV),1)
   UBUNTU_RELEASE_TARGETS  := $(foreach ver,$(UBUNTU_DIST_VERSIONS),$(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Ubuntu$(ver)_x86_64.venv.ubuntu$(ver))
+  ALPINE_RELEASE_TARGETS  := $(foreach ver,$(ALPINE_DIST_VERSIONS),$(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Alpine$(ver)_x86_64.venv.alpine$(ver))
   WINDOWS_RELEASE_TARGETS := $(WINDOWS_RELEASE_FILES).venv.windows
 else
   UBUNTU_RELEASE_TARGETS  := $(foreach ver,$(UBUNTU_DIST_VERSIONS),$(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Ubuntu$(ver)_x86_64.ubuntu$(ver))
+  ALPINE_RELEASE_TARGETS  := $(foreach ver,$(ALPINE_DIST_VERSIONS),$(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Alpine$(ver)_x86_64.alpine$(ver))
   WINDOWS_RELEASE_TARGETS := $(WINDOWS_RELEASE_FILES).windows
 endif
 
@@ -50,9 +53,9 @@ endif
 ifeq ($(ON_WINDOWS),0)
 
 ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
-releases: $(UBUNTU_RELEASE_TARGETS) $(WINDOWS_RELEASE_TARGETS)
+releases: $(UBUNTU_RELEASE_TARGETS) $(ALPINE_RELEASE_TARGETS) $(WINDOWS_RELEASE_TARGETS)
 else
-releases: $(UBUNTU_RELEASE_TARGETS)
+releases: $(UBUNTU_RELEASE_TARGETS) $(ALPINE_RELEASE_TARGETS)
 endif
 
 else
@@ -92,6 +95,9 @@ endif
 ifeq ($(ON_WINDOWS),0)
 $(filter-out $(CURRENT_RELEASE_FILE),$(UBUNTU_RELEASE_FILES)): $(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Ubuntu%_x86_64:
 	@make $@.venv.ubuntu$*
+
+$(filter-out $(CURRENT_RELEASE_FILE),$(ALPINE_RELEASE_FILES)): $(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Alpine%_x86_64:
+	@make $@.venv.alpine$*
 
 ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 $(WINDOWS_RELEASE_FILES):
