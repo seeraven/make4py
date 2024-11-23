@@ -66,7 +66,7 @@ else
     ifeq (, $(shell which lsb_release))
         LINUX_PLATFORM_STRING := $(shell uname -s)_$(shell uname -m)
     else
-        LINUX_PLATFORM_STRING := $(shell lsb_release -i -s)$(shell lsb_release -r -s)_$(shell uname -m)
+        LINUX_PLATFORM_STRING := $(shell lsb_release -i -s)$(shell lsb_release -r -s | grep -o -E "[0-9]+.[0-9]+")_$(shell uname -m)
     endif
     SHORT_PLATFORM := $(shell uname -s | tr '[:lower:]' '[:upper:]')
     SET_PYTHONPATH := PYTHONPATH=$(PYTHONPATH)

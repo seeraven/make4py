@@ -9,7 +9,7 @@
 #                --rm --tag make4py:ubuntu20.04 .dockerfiles
 #
 
-ARG UBUNTU_VERSION
+ARG UBUNTU_VERSION=20.04
 FROM ubuntu:$UBUNTU_VERSION
 
 # System update

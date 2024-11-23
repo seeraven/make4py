@@ -1,0 +1,53 @@
+#
+# Dockerfile to generate make4py docker container based on Ubuntu docker images.
+#
+# Call with:
+#   docker build --build-arg ALPINE_VERSION=20.04 \
+#                --build-arg TGT_UID=$(id -u) \
+#                --build-arg TGT_GID=$(id -g) \
+#                --file .dockerfiles/Dockerfile.alpine \
+#                --rm --tag make4py:alpine3.20 .dockerfiles
+#
+
+ARG PYTHON_VERSION=3.12
+ARG ALPINE_VERSION=3.17
+FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION}
+
+# Makefile support and other system related stuff
+ARG ADDITIONAL_PACKAGES=
+
+RUN apk --update --no-cache add \
+    zlib-dev \
+    musl-dev \
+    libc-dev \
+    libffi-dev \
+    gcc \
+    g++ \
+    git \
+    pwgen \
+    bash \
+    shadow \
+    make \
+    lsb-release-minimal \
+    $ADDITIONAL_PACKAGES
+
+# Custom setup scripts
+COPY custom_setup_*.sh /tmp/
+RUN ["/bin/bash", "-c", "shopt -s nullglob; for SCRIPT in /tmp/custom_setup_*.sh; do $SCRIPT; done"]
+
+# Create dockeruser user
+ARG TGT_GID
+ARG TGT_UID
+
+RUN getent group $TGT_GID && groupmod -n dockeruser $(getent group $TGT_GID | cut -d: -f1) || true
+RUN getent group $TGT_GID || groupadd --gid $TGT_GID dockeruser
+RUN id -u -n $TGT_UID     && userdel -r -f $(id -u -n $TGT_UID) || true
+RUN useradd --gid $TGT_GID --uid $TGT_UID --shell /bin/bash --create-home dockeruser
+
+# To distinguish between running in a docker and running on the host:
+ENV IN_DOCKER=1
+
+# For PyQt5 applications:
+ENV QT_QPA_PLATFORM=minimal
+
+CMD ["/bin/bash", "-l"]

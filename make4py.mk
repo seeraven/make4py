@@ -26,6 +26,8 @@ include $(MAKE4PY_DIR)02_platform_support.mk
 ALL_TARGET               := $(or $(ALL_TARGET),help)
 BUILD_DIR                := $(or $(BUILD_DIR),build)
 UBUNTU_DIST_VERSIONS     := $(or $(UBUNTU_DIST_VERSIONS),18.04 20.04 22.04)
+ALPINE_PYTHON_VERSION    := $(or $(ALPINE_PYTHON_VERSION),3.12)
+ALPINE_DIST_VERSIONS     := $(or $(ALPINE_DIST_VERSIONS),)
 ENABLE_WINDOWS_SUPPORT   := $(or $(ENABLE_WINDOWS_SUPPORT),1)
 PYCODESTYLE_CONFIG       := $(or $(PYCODESTYLE_CONFIG),$(MAKE4PY_DIR)/.pycodestyle)
 SRC_DIRS                 := $(or $(SRC_DIRS),$(wildcard src/. test/.))
@@ -90,6 +92,11 @@ ifeq ($(ON_WINDOWS),0)
 	@echo "                             supported Ubuntu versions are $(UBUNTU_DIST_VERSIONS)"
 	@echo " .ubuntu                   : Execute the make target on all"
 	@echo "                             supported Ubuntu versions $(UBUNTU_DIST_VERSIONS)."
+	@echo " .alpineXX.YY              : Execute the make target in a docker"
+	@echo "                             container running Alpine Linux XX.YY. The"
+	@echo "                             supported Alpine versions are $(ALPINE_DIST_VERSIONS)"
+	@echo " .alpine                   : Execute the make target on all"
+	@echo "                             supported Alpine versions $(ALPINE_DIST_VERSIONS)."
 ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 	@echo " .windows                  : Execute the make target in a vagrant"
 	@echo "                             box running Windows."
@@ -169,6 +176,11 @@ ifeq ($(ON_WINDOWS),0)
 	@echo "                             supported Ubuntu versions are $(UBUNTU_DIST_VERSIONS)"
 	@echo " .ubuntu                   : Execute the make target on all"
 	@echo "                             supported Ubuntu versions $(UBUNTU_DIST_VERSIONS)."
+	@echo " .alpineXX.YY              : Execute the make target in a docker"
+	@echo "                             container running Alpine Linux XX.YY. The"
+	@echo "                             supported Alpine versions are $(ALPINE_DIST_VERSIONS)"
+	@echo " .alpine                   : Execute the make target on all"
+	@echo "                             supported Alpine versions $(ALPINE_DIST_VERSIONS)."
 ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
 	@echo " .windows                  : Execute the make target in a vagrant"
 	@echo "                             box running Windows."
@@ -318,6 +330,7 @@ show-env:
 	@echo " SET_PYTHONPATH     = $(SET_PYTHONPATH)"
 	@echo " IN_DOCKER          = $(IN_DOCKER)"
 	@echo " PYINSTALLER_ARGS   = $(PYINSTALLER_ARGS)"
+	@echo " LINUX_PLATFORM_STRING = $(LINUX_PLATFORM_STRING)"
 
 
 # ----------------------------------------------------------------------------

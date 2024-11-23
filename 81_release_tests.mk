@@ -13,6 +13,7 @@
 #  SETTINGS
 # ----------------------------------------------------------------------------
 UBUNTU_RELEASE_TEST_TARGETS := $(foreach ver,$(UBUNTU_DIST_VERSIONS),$(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Ubuntu$(ver)_x86_64.release_test.venv.ubuntu$(ver))
+ALPINE_RELEASE_TEST_TARGETS := $(foreach ver,$(ALPINE_DIST_VERSIONS),$(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Alpine$(ver)_x86_64.release_test.venv.alpine$(ver))
 WINDOWS_RELEASE_TEST_TARGETS := $(WINDOWS_RELEASE_FILES).release_test.venv.windows
 
 
@@ -27,9 +28,9 @@ ifneq ($(FUNCTEST_DIR),)
 ifeq ($(ON_WINDOWS),0)
 
 ifeq ($(ENABLE_WINDOWS_SUPPORT),1)
-test-releases: $(UBUNTU_RELEASE_TEST_TARGETS) $(WINDOWS_RELEASE_TEST_TARGETS)
+test-releases: $(UBUNTU_RELEASE_TEST_TARGETS) $(ALPINE_RELEASE_TEST_TARGETS) $(WINDOWS_RELEASE_TEST_TARGETS)
 else
-test-releases: $(UBUNTU_RELEASE_TEST_TARGETS)
+test-releases: $(UBUNTU_RELEASE_TEST_TARGETS) $(ALPINE_RELEASE_TEST_TARGETS)
 endif
 
 else
