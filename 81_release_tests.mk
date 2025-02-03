@@ -43,7 +43,7 @@ test-current-release: $(CURRENT_RELEASE_FILE).release_test.venv
 
 %.release_test: %
 	@echo "Testing release $*..."
-ifneq (,$(findstring --onefile,$(PYINSTALLER_ARGS)))
+ifeq ($(PYINSTALLER_ONEFILE),1)
 	@pytest $(FUNCTEST_SELECTION) --executable $* $(FUNCTEST_DIR)
 else
   ifeq ($(ON_WINDOWS),1)

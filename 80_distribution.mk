@@ -14,7 +14,7 @@
 # ----------------------------------------------------------------------------
 UBUNTU_RELEASE_FILES    := $(foreach ver,$(UBUNTU_DIST_VERSIONS),$(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Ubuntu$(ver)_x86_64)
 ALPINE_RELEASE_FILES    := $(foreach ver,$(ALPINE_DIST_VERSIONS),$(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_Alpine$(ver)_x86_64)
-ifneq (,$(findstring --onefile,$(PYINSTALLER_ARGS_WINDOWS)))
+ifeq ($(PYINSTALLER_ONEFILE),1)
   WINDOWS_RELEASE_FILES   := $(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_win10_64bit.exe
 else
   WINDOWS_RELEASE_FILES   := $(RELEASE_DIR)/$(APP_NAME)_v$(APP_VERSION)_win10_64bit
@@ -31,7 +31,7 @@ else
 endif
 
 ifeq ($(ON_WINDOWS),1)
-  ifneq (,$(findstring --onefile,$(PYINSTALLER_ARGS)))
+  ifeq ($(PYINSTALLER_ONEFILE),1)
     DIST_FILE            := dist/$(APP_NAME).exe
   else
     DIST_FILE            := dist/$(APP_NAME)
@@ -78,15 +78,19 @@ $(CURRENT_RELEASE_FILE):
 else
 
 $(CURRENT_RELEASE_FILE): $(SOURCES)
-ifneq (,$(findstring --onefile,$(PYINSTALLER_ARGS)))
+ifeq ($(PYINSTALLER_ONEFILE),1)
 	@$(call RMFILE,$(DIST_FILE))
 else
 	@$(call RMDIRR,$(DIST_FILE))
 endif
+ifeq ($(PYINSTALLER_SPEC),)
 	@pyinstaller $(PYINSTALLER_ARGS) --workpath $(PYINSTALLER_WORK_DIR) --name $(APP_NAME) $(SCRIPT)
+else
+	@pyinstaller $(PYINSTALLER_ARGS) --workpath $(PYINSTALLER_WORK_DIR) $(PYINSTALLER_SPEC)
+endif
 	@$(call MKDIR,releases)
 	@$(call MOVE,$(DIST_FILE) $(CURRENT_RELEASE_FILE))
-ifeq (,$(findstring --onefile,$(PYINSTALLER_ARGS)))
+ifeq ($(PYINSTALLER_ONEFILE),0)
 	@$(call ZIP,releases,$(notdir $(CURRENT_RELEASE_FILE)),$(notdir $(CURRENT_RELEASE_FILE)))
 endif
 

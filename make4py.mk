@@ -43,6 +43,18 @@ PYINSTALLER_ARGS         := $(or $($(PYINSTALLER_ARGS_VAR)),$(or $(PYINSTALLER_A
 PYINSTALLER_ARGS_WINDOWS := $(or $(PYINSTALLER_ARGS_WINDOWS),$(PYINSTALLER_ARGS))
 PYINSTALLER_ARGS_LINUX   := $(or $(PYINSTALLER_ARGS_LINUX),$(PYINSTALLER_ARGS))
 PYINSTALLER_ARGS_DARWIN  := $(or $(PYINSTALLER_ARGS_DARWIN),$(PYINSTALLER_ARGS))
+PYINSTALLER_SPEC         := $(or $(PYINSTALLER_SPEC),)
+ifeq ($(PYINSTALLER_ONEFILE),)
+	ifeq ($(PYINSTALLER_SPEC),)
+		ifeq (,$(findstring --onefile,$(PYINSTALLER_ARGS)))
+			PYINSTALLER_ONEFILE := 0
+		else
+	  		PYINSTALLER_ONEFILE := 1
+		endif
+  	else
+		PYINSTALLER_ONEFILE   := 1
+  	endif
+endif
 CLEAN_FILES              := $(or $(CLEAN_FILES),)
 CLEAN_DIRS               := $(or $(CLEAN_DIRS),)
 CLEAN_DIRS_RECURSIVE     := $(or $(CLEAN_DIRS_RECURSIVE),)
@@ -344,7 +356,10 @@ distclean: clean
 
 clean:
 	@$(call RMDIR,$(VENV_DIR) .pytest_cache dist build doc/build doc/*coverage doc/source/apidoc $(CLEAN_DIRS))
-	@$(call RMFILE,.coverage* .coverage-* *.spec $(CLEAN_FILES))
+	@$(call RMFILE,.coverage* .coverage-* $(CLEAN_FILES))
+ifeq ($(PYINSTALLER_SPEC),)
+	@$(call RMFILE,*.spec)
+endif
 	@$(call RMDIRR,__pycache__)
 	@$(call RMDIRR,*.egg-info)
 	@$(foreach d,$(CLEAN_DIRS_RECURSIVE),$(call RMDIRR,$d))
