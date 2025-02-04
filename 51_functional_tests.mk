@@ -51,9 +51,12 @@ endif
 endif
 
 
+ifneq ($(TEST_SUPPORT),)
+
+.PHONY: tests tests-coverage
+
 ifneq ($(FUNCTEST_DIR),)
 ifneq ($(UNITTEST_DIR),)
-.PHONY: tests tests-coverage
 
 tests: unittests functional-tests
 
@@ -61,7 +64,7 @@ ifeq ($(SWITCH_TO_VENV),1)
 
 tests-coverage: tests-coverage.venv
 
-else
+else  # SWITCH_TO_ENV
 
 tests-coverage: unittests-coverage functional-tests-coverage
 	@coverage combine
@@ -69,10 +72,22 @@ tests-coverage: unittests-coverage functional-tests-coverage
 	@$(call RMDIR,doc/tests-coverage)
 	@coverage html -d doc/tests-coverage
 
-endif
+endif # SWITCH_TO_ENV
 
-endif
-endif
+else  # No unit tests
+
+tests: functional-tests
+tests-coverage: functional-tests-coverage
+
+endif # UNITTEST_DIR
+
+else  # No functional tests (but unit tests as TEST_SUPPORT is set)
+
+tests: unittests
+tests-coverage: unittests-coverage
+
+endif # FUNCTEST_DIR
+endif # TEST_SUPPORT
 
 
 # ----------------------------------------------------------------------------

@@ -149,6 +149,9 @@ ifneq ($(UNITTEST_DIR),)
 	@echo " tests-coverage            : Execute the unittests and functional tests"
 	@echo "                             and collect the code coverage."
   else
+	@echo " tests                     : Execute the unittests (alias for the target unittests)."
+	@echo " tests-coverage            : Execute the unittests and collect the code coverage "
+	@echo "                             (alias for unittests-coverage)."
 	@echo " unittests                 : Execute the unittests. Use the UNITTESTS variable to"
 	@echo "                             execute only the selected ones."
 	@echo " unittests-list            : List all available unittests."
@@ -157,11 +160,14 @@ ifneq ($(UNITTEST_DIR),)
   endif
 else
   ifneq ($(FUNCTEST_DIR),)
-	@echo " functional-tests               : Execute the functional tests. Use the FUNCTESTS variable to"
-	@echo "                                  execute only the selected ones."
-	@echo " functional-tests-list          : List all available functional tests."
-	@echo " functional-tests-coverage      : Execute the functional tests and collect the code coverage."
-	@echo "                                  Use the FUNCTESTS variable to execute only the selected ones."
+	@echo " tests                     : Execute the functional tests (alias for the target functional-tests)."
+	@echo " tests-coverage            : Execute the functional tests and collect the code coverage "
+	@echo "                             (alias for functional-tests-coverage)."
+	@echo " functional-tests          : Execute the functional tests. Use the FUNCTESTS variable to"
+	@echo "                             execute only the selected ones."
+	@echo " functional-tests-list     : List all available functional tests."
+	@echo " functional-tests-coverage : Execute the functional tests and collect the code coverage."
+	@echo "                             Use the FUNCTESTS variable to execute only the selected ones."
   endif
 endif
 ifneq ($(DOC_SUPPORT),)
@@ -278,7 +284,17 @@ ifneq ($(FUNCTEST_DIR),)
 	@echo " tests                     : Execute the unittests and the functional-tests."
 	@echo " tests-coverage            : Execute the unittests and the functional-tests and collect"
 	@echo "                             the code coverage."
+else
+	@echo " tests                     : Execute the unittests (alias for the target unittests)."
+	@echo " tests-coverage            : Execute the unittests and collect the code coverage "
+	@echo "                             (alias for unittests-coverage)."
 endif
+else
+	@echo " tests                     : Execute the functional tests (alias for the target functional-tests)."
+	@echo " tests-coverage            : Execute the functional tests and collect the code coverage "
+	@echo "                             (alias for functional-tests-coverage)."
+endif
+ifneq ($(UNITTEST_DIR),)
 	@echo " unittests                 : Execute the unittests. Use the UNITTESTS variable to"
 	@echo "                             execute only the selected ones."
 	@echo " unittests-list            : List all available unittests."
@@ -286,11 +302,11 @@ endif
 	@echo "                             Use the UNITTESTS variable to execute only the selected ones."
 endif
 ifneq ($(FUNCTEST_DIR),)
-	@echo " functional-tests               : Execute the functional tests. Use the FUNCTESTS variable to"
-	@echo "                                  execute only the selected ones."
-	@echo " functional-tests-list          : List all available functional tests."
-	@echo " functional-tests-coverage      : Execute the functional tests and collect the code coverage."
-	@echo "                                  Use the FUNCTESTS variable to execute only the selected ones."
+	@echo " functional-tests          : Execute the functional tests. Use the FUNCTESTS variable to"
+	@echo "                             execute only the selected ones."
+	@echo " functional-tests-list     : List all available functional tests."
+	@echo " functional-tests-coverage : Execute the functional tests and collect the code coverage."
+	@echo "                             Use the FUNCTESTS variable to execute only the selected ones."
 endif
 	@echo ""
 endif
