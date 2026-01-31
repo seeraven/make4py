@@ -38,7 +38,7 @@ echo "-------------------------------------------------------------"
 echo "Create $(PIP_DEPS_VENV_DIR)"
 echo "-------------------------------------------------------------"
 $(PYTHON) -m venv $(PIP_DEPS_VENV_DIR)
-$(PIP_DEPS_VENV_ACTIVATE_PLUS) $(PYTHON) -m pip install --upgrade pip
+$(PIP_DEPS_VENV_ACTIVATE_PLUS) $(PYTHON) -m pip install --upgrade "$(PIP_PACKAGE)"
 $(PIP_DEPS_VENV_ACTIVATE_PLUS) pip install pip-tools
 endef
 
